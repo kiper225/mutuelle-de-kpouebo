@@ -1,0 +1,10 @@
+# Apache : renvoie toutes les adresses vers index.html (application Vue).
+# Si le site est dans un sous-dossier, adaptez RewriteBase et la dernière règle (ex. /mon-dossier/).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
