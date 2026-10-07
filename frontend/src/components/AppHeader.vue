@@ -67,7 +67,7 @@ async function onLogout() {
       <div class="container">
         <RouterLink to="/" class="brand">
           <img src="/logo.jpg" alt="Logo de la Mutuelle de Développement de Kpouèbo"  />
-          <p style="width: 120px; font-weight: bold; font-size: 12px; font-family: 'Montserrat', sans-serif; text-transform: uppercase;">{{ site.name }}</p>
+          <p style="width: 120px; font-weight: bold; font-size: 12px; font-family: 'Montserrat', sans-serif; text-transform: uppercase;">RUMBO DE KPOUEBO</p>
         </RouterLink>
         <nav class="nav" aria-label="Navigation principale">
           <RouterLink to="/">Accueil</RouterLink>

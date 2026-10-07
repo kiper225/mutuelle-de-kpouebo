@@ -42,8 +42,8 @@ export const site = {
     { name: '[Nom Prénom 4]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
   ],
   don: {
-    intro: '[Pourquoi donner : à quels projets servent les dons.]',
-    howTo: '[Comment donner en attendant le paiement en ligne : contact du trésorier, numéro Mobile Money de la mutuelle, etc.]',
+    intro: 'Pourquoi donner : à quels projets servent les dons.',
+    howTo: 'Comment donner en attendant le paiement en ligne : contact du trésorier, numéro Mobile Money de la mutuelle, etc.',
   },
   contact: { phone: '[Téléphone]', email: '[Email]', address: 'Kpouèbo, Côte d’Ivoire' },
 }
