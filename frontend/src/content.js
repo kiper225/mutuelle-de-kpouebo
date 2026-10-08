@@ -5,7 +5,7 @@ export const site = {
   name: 'Mutuelle de Développement de Kpouèbo',
   slogan: 'Unir, dynamiser, développer Kpouèbo',
   hero: '[Phrase d’accroche : ce que la mutuelle apporte à son village.]',
-  heroImage: '', // photo plein écran du village ou des membres
+  heroImage: '/img/hero.jpg', // photo plein écran du village ou des membres
   about: '[Présentation de la mutuelle en 2 ou 3 phrases.]',
   history: '[Histoire de la mutuelle : date de création, fondateurs, grandes étapes.]',
   videoUrl: '', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'

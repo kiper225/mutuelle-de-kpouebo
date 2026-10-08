@@ -12,7 +12,7 @@ const latest = ref([])
 const loadError = ref('')
 
 const heroStyle = site.heroImage
-  ? { backgroundImage: `linear-gradient(rgba(15,90,46,.88), rgba(15,90,46,.88)), url(${site.heroImage})` }
+  ? { backgroundImage: `linear-gradient(rgba(15,90,46, 0.2), rgba(15,90,46, 0.88)), url(${site.heroImage})` }
   : {}
 
 onMounted(async () => {
