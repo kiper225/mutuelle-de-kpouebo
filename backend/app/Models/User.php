@@ -21,10 +21,13 @@ class User extends Authenticatable
     public const STATUS_ACTIVE = 'active';
     public const STATUS_SUSPENDED = 'suspended';
 
-    // `role` et `status` ne sont volontairement PAS assignables en masse.
+    public const MARITAL_STATUSES = ['celibataire', 'marie', 'divorce', 'veuf'];
+
+    // `role`, `status`, `member_number` et `joined_at` ne sont volontairement PAS assignables en masse.
     protected $fillable = [
         'name', 'last_name', 'first_names', 'email', 'phone',
-        'birth_date', 'profession', 'residence', 'photo_path', 'password',
+        'birth_date', 'birth_place', 'children_count', 'marital_status',
+        'profession', 'residence', 'mutuelle_role', 'photo_path', 'password',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -36,6 +39,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'birth_date' => 'date',
+            'children_count' => 'integer',
+            'joined_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

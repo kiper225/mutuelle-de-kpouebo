@@ -17,6 +17,8 @@ const routes = [
   { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true } },
   { path: '/admin/donations', component: () => import('./views/admin/AdminDonationsView.vue'), meta: { requiresAdmin: true } },
   { path: '/paiement/retour', component: () => import('./views/PaymentReturnView.vue') },
+  { path: '/admin/membres/:id', component: () => import('./views/admin/AdminMemberEditView.vue'), meta: { requiresAdmin: true } },
+  { path: '/imprimer/:type/:id', component: () => import('./views/PrintView.vue'), meta: { requiresAdmin: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

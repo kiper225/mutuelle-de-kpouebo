@@ -55,6 +55,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('members', [Admin\MemberController::class, 'index']);
                 Route::post('members/{user}/approve', [Admin\MemberController::class, 'approve']);
                 Route::post('members/{user}/suspend', [Admin\MemberController::class, 'suspend']);
+                Route::get('members/{user}', [Admin\MemberController::class, 'show']);
+                Route::put('members/{user}', [Admin\MemberController::class, 'update']);
 
                 Route::apiResource('publications', Admin\PublicationController::class);
 

@@ -32,3 +32,22 @@ export function currentPeriod() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
+
+export const MARITAL_STATUS = {
+  celibataire: 'Célibataire',
+  marie: 'Marié(e)',
+  divorce: 'Divorcé(e)',
+  veuf: 'Veuf / Veuve',
+}
+
+export const MONTHS = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+/** « 2026-10-09T… » ou « 2026-10-09 » devient « 09/10/2026 » (sans décalage de fuseau). */
+export function formatDateShort(value) {
+  if (!value) return ''
+  const [y, m, d] = String(value).slice(0, 10).split('-')
+  return `${d}/${m}/${y}`
+}

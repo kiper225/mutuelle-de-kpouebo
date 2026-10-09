@@ -92,15 +92,17 @@ onMounted(() => {
           <p v-if="!members.length" class="muted">Aucun membre pour ce filtre.</p>
           <div v-else class="table-wrap">
             <table>
-              <thead><tr><th>Nom</th><th>Téléphone</th><th>Demande du</th><th>Statut</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Nom</th><th>Téléphone</th><th>Poste</th><th>Demande du</th><th>Statut</th><th>Actions</th></tr></thead>
               <tbody>
                 <tr v-for="m in members" :key="m.id">
                   <td>{{ m.name }}</td>
                   <td>{{ m.phone }}</td>
+                  <td>{{ m.mutuelle_role }}</td>
                   <td>{{ formatDate(m.created_at) }}</td>
                   <td><span class="badge" :class="badge(m.status)">{{ MEMBER_STATUS[m.status] || m.status }}</span></td>
                   <td>
                     <div class="actions">
+                      <RouterLink :to="`/admin/membres/${m.id}`" class="btn outline-green small">Dossier</RouterLink>
                       <button v-if="m.status !== 'active'" class="btn green small" @click="act(m, 'approve')">
                         {{ m.status === 'pending' ? 'Valider' : 'Réactiver' }}
                       </button>

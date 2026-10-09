@@ -9,6 +9,7 @@ return [
     // Secret partagé pour la notification de paiement générique (voir PaymentWebhookController).
     'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+    'member_prefix' => env('MEMBER_NUMBER_PREFIX', 'MBR'),
 
     'paystack' => [
         // Clé SECRÈTE Paystack (sk_test_… en essai, sk_live_… en production). Ne jamais la mettre côté Vue ni dans Git.

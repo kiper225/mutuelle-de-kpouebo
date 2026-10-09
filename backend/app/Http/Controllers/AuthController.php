@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
@@ -17,24 +18,29 @@ class AuthController extends Controller
         $request->merge(['phone' => $this->normalizePhone((string) $request->input('phone'))]);
 
         $data = $request->validate([
+            // État civil (obligatoire)
             'last_name' => ['required', 'string', 'max:100'],
             'first_names' => ['required', 'string', 'max:150'],
-            'phone' => ['required', 'regex:/^\+?[0-9]{8,15}$/', 'unique:users,phone'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
-            'birth_date' => ['nullable', 'date', 'before:today'],
+            'birth_date' => ['required', 'date', 'before:today', 'after:1900-01-01'],
+            'birth_place' => ['required', 'string', 'max:150'],
+            'children_count' => ['required', 'integer', 'min:0', 'max:30'],
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            // Informations personnelles
+            'marital_status' => ['nullable', Rule::in(User::MARITAL_STATUSES)],
             'profession' => ['nullable', 'string', 'max:150'],
             'residence' => ['nullable', 'string', 'max:150'],
-            'photo' => ['nullable', 'image', 'max:2048'],
+            'mutuelle_role' => ['nullable', 'string', 'max:100'],
+            // Compte
+            'phone' => ['required', 'regex:/^\+?[0-9]{8,15}$/', 'unique:users,phone'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'accept_terms' => ['accepted'],
         ]);
 
         $user = new User(collect($data)->except(['photo', 'accept_terms'])->all());
         $user->name = trim($data['first_names'].' '.mb_strtoupper($data['last_name']));
-
-        if ($request->hasFile('photo')) {
-            $user->photo_path = $request->file('photo')->store('photos', 'public');
-        }
+        $user->mutuelle_role = $data['mutuelle_role'] ?? 'Membre'; // le bureau vérifie ce renseignement
+        $user->photo_path = $request->file('photo')->store('photos', 'public');
 
         $user->save(); // role = member, status = pending (valeurs par défaut)
 

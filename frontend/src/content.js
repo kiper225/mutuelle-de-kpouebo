@@ -46,4 +46,9 @@ export const site = {
     howTo: 'Comment donner en attendant le paiement en ligne : contact du trésorier, numéro Mobile Money de la mutuelle, etc.',
   },
   contact: { phone: '[Téléphone]', email: '[Email]', address: 'Kpouèbo, Côte d’Ivoire' },
+
+  // Membre du bureau désigné pour signer la fiche, la carte et le carton annuel
+  signataire: { name: '[Nom Prénom du membre du bureau désigné]', role: '[Fonction au bureau]' },
+  engagement: '[Texte d’engagement du membre : respect des statuts et du règlement intérieur de la mutuelle.]',
+  badgeNotice: 'Carte strictement personnelle. En cas de perte, prévenir le bureau de la mutuelle.',
 }
