@@ -15,7 +15,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(\App\Services\PaymentGateway::class, function () {
+        return config('mutuelle.paystack.secret_key')
+            ? app(\App\Services\PaystackGateway::class)
+            : app(\App\Services\NullPaymentGateway::class);
+        });
     }
 
     /**

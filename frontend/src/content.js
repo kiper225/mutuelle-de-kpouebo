@@ -8,7 +8,7 @@ export const site = {
   heroImage: '/img/hero.jpg', // photo plein écran du village ou des membres
   about: '[Présentation de la mutuelle en 2 ou 3 phrases.]',
   history: '[Histoire de la mutuelle : date de création, fondateurs, grandes étapes.]',
-  videoUrl: '', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'
+  videoUrl: 'https://www.youtube.com/watch?v=Aa5RJkpntAM', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'
   footerText: '[Courte description de la mutuelle.]',
   president: {
     name: '[Nom Prénom]',

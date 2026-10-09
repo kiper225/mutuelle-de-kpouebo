@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cotisation;
+use App\Services\PaymentSettler;
 use Illuminate\Http\Request;
 
 /**
- * Notification de paiement envoyée par la passerelle.
- * ATTENTION : le nom de l'en-tête de signature, l'algorithme et les champs du corps
- * sont ici génériques. Ils doivent être alignés sur la documentation du prestataire retenu.
+ * Notification de paiement générique signée (HMAC-SHA256, en-tête X-Signature).
+ * Utile pour un autre prestataire ou pour des tests ; Paystack utilise PaystackWebhookController.
  */
 class PaymentWebhookController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, PaymentSettler $settler)
     {
         $secret = config('mutuelle.webhook_secret');
         abort_if(! $secret, 503, 'Webhook non configuré.');
@@ -26,17 +25,10 @@ class PaymentWebhookController extends Controller
             'provider_reference' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $cotisation = Cotisation::where('reference', $data['reference'])->firstOrFail();
+        $record = $settler->find($data['reference']);
+        abort_if(! $record, 404, 'Référence inconnue.');
 
-        if ($cotisation->status === Cotisation::STATUS_PAID) {
-            return response()->json(['message' => 'Déjà traité.']); // idempotent
-        }
-
-        $cotisation->forceFill([
-            'status' => $data['status'] === 'success' ? Cotisation::STATUS_PAID : Cotisation::STATUS_FAILED,
-            'provider_reference' => $data['provider_reference'] ?? null,
-            'paid_at' => $data['status'] === 'success' ? now() : null,
-        ])->save();
+        $settler->settle($record, $data['status'] === 'success', $data['provider_reference'] ?? null);
 
         return response()->json(['message' => 'OK']);
     }

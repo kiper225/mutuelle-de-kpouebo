@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { auth, isLoggedIn, isAdmin, logout } from '../auth'
+import { auth, isLoggedIn, isAdmin, logout, refreshUnread } from '../auth'
 import { site } from '../content'
 
 const route = useRoute()
@@ -42,12 +42,13 @@ const onKey = (e) => { if (e.key === 'Escape') close() }
 onMounted(() => {
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
+  refreshUnread()
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocClick)
   document.removeEventListener('keydown', onKey)
 })
-watch(() => route.fullPath, close)
+watch(() => route.fullPath, () => { close(); refreshUnread() })
 
 async function onLogout() {
   await logout()
@@ -81,6 +82,7 @@ async function onLogout() {
           <RouterLink v-else-if="isLoggedIn" to="/espace" class="btn orange small">Mon espace</RouterLink>
           <RouterLink v-else to="/espace" class="btn orange small">Espace membres</RouterLink>
           <RouterLink to="/don" class="btn green small">Faire un don</RouterLink>
+          <RouterLink v-if="isLoggedIn" to="/messagerie">Messagerie<span v-if="auth.unread" class="badge-count">{{ auth.unread }}</span></RouterLink>
           <button v-if="isLoggedIn" class="linklike" type="button" @click="onLogout">Déconnexion ({{ auth.user.first_names || auth.user.name }})</button>
         </nav>
       </div>
