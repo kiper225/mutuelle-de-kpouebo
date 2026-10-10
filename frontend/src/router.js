@@ -8,17 +8,50 @@ const routes = [
   { path: '/actualites', component: () => import('./views/NewsListView.vue') },
   { path: '/actualites/:slug', component: () => import('./views/NewsDetailView.vue') },
   { path: '/don', component: () => import('./views/DonView.vue') },
+  { path: '/paiement/retour', component: () => import('./views/PaymentReturnView.vue') },
   { path: '/inscription', component: () => import('./views/RegisterView.vue'), meta: { guestOnly: true } },
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { guestOnly: true } },
   { path: '/espace', component: () => import('./views/MemberAreaView.vue'), meta: { requiresAuth: true } },
-  { path: '/admin', component: () => import('./views/admin/AdminDashboardView.vue'), meta: { requiresAdmin: true } },
-  { path: '/admin/publications', component: () => import('./views/admin/AdminPublicationsView.vue'), meta: { requiresAdmin: true } },
-  { path: '/admin/cotisations', component: () => import('./views/admin/AdminCotisationsView.vue'), meta: { requiresAdmin: true } },
+  { path: '/profil', component: () => import('./views/ProfileView.vue'), meta: { requiresAuth: true } },
   { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true } },
-  { path: '/admin/donations', component: () => import('./views/admin/AdminDonationsView.vue'), meta: { requiresAdmin: true } },
-  { path: '/paiement/retour', component: () => import('./views/PaymentReturnView.vue') },
-  { path: '/admin/membres/:id', component: () => import('./views/admin/AdminMemberEditView.vue'), meta: { requiresAdmin: true } },
   { path: '/imprimer/:type/:id', component: () => import('./views/PrintView.vue'), meta: { requiresAdmin: true } },
+  {
+    path: '/admin',
+    component: () => import('./layouts/AdminLayout.vue'),
+    meta: { requiresAdmin: true, layout: 'admin' },
+    children: [
+      {
+        path: '',
+        component: () => import('./views/admin/AdminDashboardView.vue'),
+        meta: { title: 'Tableau de bord', subtitle: 'Vue d’ensemble des membres, cotisations et dons.' },
+      },
+      {
+        path: 'membres',
+        component: () => import('./views/admin/AdminMembersView.vue'),
+        meta: { title: 'Membres', subtitle: 'Validez les adhésions et gérez les dossiers.' },
+      },
+      {
+        path: 'membres/:id',
+        component: () => import('./views/admin/AdminMemberEditView.vue'),
+        meta: { title: 'Dossier du membre', subtitle: 'Informations, photo et documents à imprimer.' },
+      },
+      {
+        path: 'publications',
+        component: () => import('./views/admin/AdminPublicationsView.vue'),
+        meta: { title: 'Publications', subtitle: 'Créez et modifiez les actualités et les projets.' },
+      },
+      {
+        path: 'cotisations',
+        component: () => import('./views/admin/AdminCotisationsView.vue'),
+        meta: { title: 'Cotisations', subtitle: 'Suivi mensuel et paiements hors ligne.' },
+      },
+      {
+        path: 'donations',
+        component: () => import('./views/admin/AdminDonationsView.vue'),
+        meta: { title: 'Dons', subtitle: 'Dons reçus en ligne et hors ligne.' },
+      },
+    ],
+  },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

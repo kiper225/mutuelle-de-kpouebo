@@ -21,6 +21,7 @@ class AuthController extends Controller
             // État civil (obligatoire)
             'last_name' => ['required', 'string', 'max:100'],
             'first_names' => ['required', 'string', 'max:150'],
+            'gender' => ['required', Rule::in(User::GENDERS)],
             'birth_date' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'birth_place' => ['required', 'string', 'max:150'],
             'children_count' => ['required', 'integer', 'min:0', 'max:30'],

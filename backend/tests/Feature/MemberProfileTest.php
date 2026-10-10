@@ -25,6 +25,7 @@ class MemberProfileTest extends TestCase
     {
         return array_merge([
             'last_name' => 'Kouassi', 'first_names' => 'Yao Jean',
+            'gender' => 'M',
             'birth_date' => '1985-04-12', 'birth_place' => 'Kpouèbo', 'children_count' => 3,
             'photo' => UploadedFile::fake()->image('photo.jpg', 300, 400),
             'marital_status' => 'marie', 'profession' => 'Enseignant', 'residence' => 'Abidjan',
@@ -45,17 +46,18 @@ class MemberProfileTest extends TestCase
         $this->assertSame(3, $user->children_count);
         $this->assertSame('Membre', $user->mutuelle_role);
         $this->assertSame('pending', $user->status);
+        $this->assertSame('M', $user->gender);
         Storage::disk('public')->assertExists($user->photo_path);
     }
 
     public function test_registration_requires_birth_place_children_and_photo(): void
     {
         $data = $this->registrationData();
-        unset($data['birth_place'], $data['children_count'], $data['photo']);
+        unset($data['birth_place'], $data['children_count'], $data['photo'], $data['gender']);
 
         $this->postJson('/api/v1/register', $data)
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['birth_place', 'children_count', 'photo']);
+            ->assertJsonValidationErrors(['birth_place', 'children_count', 'photo', 'gender']);
     }
 
     public function test_approval_assigns_a_member_number_once(): void
@@ -99,5 +101,13 @@ class MemberProfileTest extends TestCase
 
         $this->getJson("/api/v1/admin/members/{$other->id}")->assertForbidden();
         $this->putJson("/api/v1/admin/members/{$other->id}", ['mutuelle_role' => 'Président'])->assertForbidden();
+    }
+
+    public function test_an_invalid_gender_is_rejected(): void
+    {
+        $member = $this->user();
+        Sanctum::actingAs($this->user('admin'));
+
+        $this->putJson("/api/v1/admin/members/{$member->id}", ['gender' => 'X'])->assertUnprocessable();
     }
 }

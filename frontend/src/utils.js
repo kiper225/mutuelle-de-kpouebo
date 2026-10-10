@@ -18,6 +18,7 @@ export const providerLabel = (p) => PROVIDERS[p] || p || '—'
 
 export const COTISATION_STATUS = { pending: 'En attente', paid: 'Payée', failed: 'Échec' }
 export const MEMBER_STATUS = { pending: 'En attente', active: 'Actif', suspended: 'Suspendu' }
+export const GENDER = { M: 'Masculin', F: 'Féminin' }
 
 export function formatDate(value) {
   if (!value) return ''

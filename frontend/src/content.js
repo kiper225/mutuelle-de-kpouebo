@@ -23,14 +23,13 @@ export const site = {
     { title: '[Axe 4]', text: '[Description courte]' },
   ],
   village: {
-    title: 'Une mutuelle présente pour tout le village',
-    text: '[Texte sur les quartiers, familles et zones où la mutuelle intervient.]',
-    image: '', // carte ou photo aérienne de Kpouèbo
+    title: 'Un village au cœur de la Côte d\'Ivoire',
+    text: 'Kpouèbo est un village du centre de la Côte d\'Ivoire, appartenant au district des Lacs, ayant pour chef-lieu de Toumodi, dans la Région du Bélier. Kpouèbo est composée de 3 quartiers : Alloubo, Yakro et Idjébo.',
+    image: '../public/img/village.jpeg', // carte ou photo aérienne de Kpouèbo
   },
   values: [
     { title: 'Solidarité', text: '[Phrase]' },
     { title: 'Entraide', text: '[Phrase]' },
-    { title: 'Unité', text: '[Phrase]' },
     { title: 'Transparence', text: '[Phrase]' },
     { title: 'Responsabilité', text: '[Phrase]' },
     { title: 'Développement', text: '[Phrase]' },

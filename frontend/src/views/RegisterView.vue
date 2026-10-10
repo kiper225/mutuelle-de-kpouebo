@@ -1,10 +1,11 @@
 <script setup>
-import { reactive, ref, onBeforeUnmount } from 'vue'
+import { reactive, ref} from 'vue'
 import { api } from '../api'
-import { MARITAL_STATUS } from '../utils'
+import { MARITAL_STATUS, GENDER } from '../utils'
+import PhotoField from '../components/PhotoField.vue'
 
 const form = reactive({
-  last_name: '', first_names: '', birth_date: '', birth_place: '', children_count: '',
+  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', children_count: '',
   marital_status: '', profession: '', residence: '', mutuelle_role: 'Membre',
   phone: '', email: '', password: '', password_confirmation: '', accept_terms: false,
 })
@@ -16,13 +17,6 @@ const success = ref('')
 const sending = ref(false)
 
 const err = (name) => errors.value[name]?.[0] || ''
-
-function onPhoto(event) {
-  const file = event.target.files[0] || null
-  if (preview.value) URL.revokeObjectURL(preview.value)
-  photo.value = file
-  preview.value = file ? URL.createObjectURL(file) : ''
-}
 
 onBeforeUnmount(() => {
   if (preview.value) URL.revokeObjectURL(preview.value)
@@ -73,6 +67,16 @@ async function submit() {
           <h2 style="color: var(--green)">Formulaire d'adhésion</h2>
           <p v-if="error" class="alert err">{{ error }}</p>
 
+          <PhotoField
+            v-model="photo"
+            label="Photo d'identité (JPG, PNG ou WebP)"
+            :aspect="3 / 4"
+            :output-width="600"
+            required
+            :error="err('photo')"
+            hint="Photo de face, sur fond clair si possible. Vous pourrez la recadrer avant l'envoi."
+          />
+
           <h3 style="margin: 8px 0 0">État civil (obligatoire)</h3>
           <div class="row">
             <div class="field">
@@ -84,6 +88,16 @@ async function submit() {
               <label for="first_names">Prénoms</label>
               <input id="first_names" v-model="form.first_names" type="text" required />
               <span class="error">{{ err('first_names') }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="gender">Genre</label>
+              <select id="gender" v-model="form.gender" required>
+                <option value="">Non précisé</option>
+                <option v-for="(label, key) in GENDER" :key="key" :value="key">{{ label }}</option>
+              </select>
+              <span class="error">{{ err('gender') }}</span>
             </div>
           </div>
           <div class="row">
@@ -103,14 +117,6 @@ async function submit() {
               <span class="error">{{ err('children_count') }}</span>
             </div>
           </div>
-          <div class="row" style="align-items: flex-end">
-            <div class="field">
-              <label for="photo">Photo d'identité (JPG, PNG ou WebP, 2 Mo maximum)</label>
-              <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required @change="onPhoto" />
-              <span class="error">{{ err('photo') }}</span>
-            </div>
-            <img v-if="preview" :src="preview" alt="Aperçu de la photo" style="width: 90px; height: 115px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line)" />
-          </div>
 
           <h3 style="margin: 16px 0 0">Informations personnelles</h3>
           <div class="row">
@@ -125,6 +131,7 @@ async function submit() {
             <div class="field">
               <label for="profession">Profession</label>
               <input id="profession" v-model="form.profession" type="text" />
+              <span class="error">{{ err('profession') }}</span>
             </div>
           </div>
           <div class="row">

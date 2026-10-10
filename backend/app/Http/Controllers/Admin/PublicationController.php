@@ -60,6 +60,9 @@ class PublicationController extends Controller
                 Storage::disk('public')->delete($publication->cover_path);
             }
             $publication->cover_path = $request->file('cover')->store('publications', 'public');
+        } elseif ($request->boolean('remove_cover') && $publication->cover_path) {
+            Storage::disk('public')->delete($publication->cover_path);
+            $publication->cover_path = null;
         }
 
         $publication->save();
@@ -89,6 +92,7 @@ class PublicationController extends Controller
             'body' => [$required, 'string'],
             'cover' => ['nullable', 'image', 'max:4096'],
             'publish' => ['sometimes', 'boolean'],
+            'remove_cover' => ['sometimes', 'boolean'],
         ]);
     }
 }

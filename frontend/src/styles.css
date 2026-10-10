@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --green: #17753f;
   --green-dark: #0f5a2e;
@@ -13,7 +15,7 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 16px; line-h
 a { color: var(--green); }
 a:hover { color: var(--orange); }
 h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
-.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.container { max-width: 1500px; margin: 0 auto; padding: 0 24px; }
 .section { padding: 56px 0; }
 .section.alt { background: var(--bg); }
 .center { text-align: center; }
@@ -201,4 +203,75 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
   body { background: #fff; }
   .doc-page { margin: 0; width: auto; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* Recadrage de photo */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.modal { background: #fff; border-radius: 10px; padding: 24px; max-width: 100%; max-height: 100%; overflow: auto; text-align: center; }
+.modal h3 { margin: 0 0 4px; }
+.crop-frame { position: relative; overflow: hidden; background: #222; cursor: grab; touch-action: none; margin: 12px auto; border-radius: 6px; }
+.crop-frame:active { cursor: grabbing; }
+.zoom { display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 14px; }
+.zoom input { width: 220px; }
+.photo-field { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.photo-preview { width: 90px; height: 120px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.photo-preview.wide { width: 160px; height: 90px; }
+
+
+/* ===== Administration : sidebar + barre du haut ===== */
+.admin-shell { display: flex; min-height: 100vh; background: var(--bg); }
+.admin-sidebar { width: 260px; flex: none; background: #fff; border-right: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.side-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); padding: 4px 4px 12px; }
+.side-brand img { width: 40px; height: 40px; }
+.side-brand b { display: block; line-height: 1.1; }
+.side-brand span { font-size: 12px; color: var(--muted); }
+.side-group { margin-top: 12px; }
+.side-label { font-size: 12px; color: var(--muted); padding: 0 10px 6px; }
+.side-link { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font: inherit; font-size: 14px; font-weight: 600; background: none; border: 0; cursor: pointer; text-align: left; }
+.side-link:hover { background: var(--bg); color: var(--ink); }
+.side-link.active { background: #e6f3ea; color: var(--green-dark); }
+.side-link svg { width: 18px; height: 18px; flex: none; }
+.side-user { margin-top: auto; border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 2px; }
+.side-user-info { display: flex; align-items: center; gap: 10px; padding: 4px 10px 8px; font-size: 13px; }
+.side-user-info b { display: block; line-height: 1.2; }
+.side-user-info span:not(.avatar) { color: var(--muted); font-size: 12px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--green); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+.admin-content { flex: 1; min-width: 0; padding: 16px; }
+.admin-topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; }
+.admin-title { flex: 1 1 240px; }
+.admin-title h1 { font-size: 18px; margin: 0; }
+.admin-title p { margin: 0; font-size: 13px; color: var(--muted); }
+.admin-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.pill-date { font-size: 13px; color: var(--muted); text-transform: capitalize; }
+.icon-btn { display: none; background: #fff; border: 1px solid var(--line); border-radius: 8px; width: 38px; height: 38px; align-items: center; justify-content: center; cursor: pointer; }
+.icon-btn svg { width: 20px; height: 20px; }
+.admin-scrim { display: none; }
+
+/* Les pages d'administration existantes gardent leur contenu, sans la bannière, le sous-menu et les marges de la version publique */
+.admin-main .page-banner, .admin-main .subnav { display: none; }
+.admin-main .section { padding: 0; background: transparent; }
+.admin-main .section .container { max-width: none; padding: 0; }
+.admin-main .card { border-radius: 12px; }
+
+/* Cartes de chiffres et graphiques */
+.kpi-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 16px; }
+.kpi { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.kpi-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; font-size: 14px; }
+.kpi-value { font-size: 26px; font-weight: 700; margin: 6px 0 12px; }
+.kpi-delta { font-size: 14px; font-weight: 600; color: var(--green); }
+.kpi-delta.down { color: var(--danger); }
+.kpi-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #e6f3ea; color: var(--green-dark); border: 1px solid #cfe6d7; }
+.pill.down { background: #fdecea; color: var(--danger); border-color: #f5c6c2; }
+.chart-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); margin-bottom: 16px; }
+.chart-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.chart-card h2 { font-size: 15px; margin: 0; }
+.chart-total { font-size: 22px; font-weight: 700; margin: 4px 0 0; }
+.chart { width: 100%; height: auto; display: block; margin-top: 8px; }
+
+@media (max-width: 900px) {
+  .admin-sidebar { position: fixed; left: 0; top: 0; z-index: 60; transform: translateX(-100%); transition: transform .2s; }
+  .admin-sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0, 0, 0, .25); }
+  .admin-scrim { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 50; }
+  .icon-btn { display: inline-flex; }
 }

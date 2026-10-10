@@ -1,122 +1,154 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { api } from '../../api'
-import { MEMBER_STATUS, formatDate, formatMoney } from '../../utils'
-import AdminNav from '../../components/AdminNav.vue'
-import Pager from '../../components/Pager.vue'
+import { formatMoney, formatDateShort } from '../../utils'
+import BarChart from '../../components/BarChart.vue'
 
 const stats = ref(null)
-const members = ref([])
-const page = ref(1)
-const last = ref(1)
-const status = ref('pending')
-const q = ref('')
+const monthly = ref(null)
+const pending = ref([])
 const error = ref('')
 
-const badge = (s) => (s === 'active' ? '' : s === 'suspended' ? 'bad' : 'warn')
+const nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
+const last = (arr) => arr?.[arr.length - 1] ?? 0
+const prev = (arr) => arr?.[arr.length - 2] ?? 0
+const sum = (arr) => (arr || []).reduce((a, b) => a + b, 0)
+const sign = (n) => (n >= 0 ? '+' : '−')
+const money = (n) => `${sign(n)}${formatMoney(Math.abs(n))}`
+const percent = (n) => `${sign(n)}${nf.format(Math.abs(n))} %`
 
-async function loadStats() {
-  try {
-    stats.value = await api.get('/admin/stats')
-  } catch (e) {
-    error.value = e.message
-  }
+/** Écart entre le mois en cours et le mois précédent. */
+function delta(arr) {
+  const diff = last(arr) - prev(arr)
+  const base = prev(arr)
+  return { diff, pct: base > 0 ? (diff / base) * 100 : null, up: diff >= 0 }
 }
 
-async function loadMembers(p = 1) {
+const cotDelta = computed(() => delta(monthly.value?.cotisations))
+const donDelta = computed(() => delta(monthly.value?.donations))
+const newMembers = computed(() => last(monthly.value?.new_members))
+
+async function load() {
   error.value = ''
   try {
-    const res = await api.get('/admin/members', { status: status.value, q: q.value.trim(), page: p })
-    members.value = res.data
-    page.value = res.current_page
-    last.value = res.last_page
+    const [s, m, p] = await Promise.all([
+      api.get('/admin/stats'),
+      api.get('/admin/stats/monthly'),
+      api.get('/admin/members', { status: 'pending', page: 1 }),
+    ])
+    stats.value = s
+    monthly.value = m
+    pending.value = p.data.slice(0, 5)
   } catch (e) {
     error.value = e.message
   }
 }
 
 async function act(member, action) {
-  if (action === 'suspend' && !confirm(`Suspendre ${member.name} ? Il sera déconnecté.`)) return
+  if (action === 'suspend' && !confirm(`Refuser la demande de ${member.name} ?`)) return
   try {
     await api.post(`/admin/members/${member.id}/${action}`)
-    await Promise.all([loadMembers(page.value), loadStats()])
+    await load()
   } catch (e) {
     error.value = e.message
   }
 }
 
-onMounted(() => {
-  loadStats()
-  loadMembers()
-})
+onMounted(load)
 </script>
 
 <template>
-  <div>
-    <div class="page-banner"><div class="container"><h1>Administration</h1></div></div>
-    <section class="section alt">
-      <div class="container">
-        <AdminNav />
-        <p v-if="error" class="alert err">{{ error }}</p>
+  <section class="section">
+    <div class="container">
+      <p v-if="error" class="alert err">{{ error }}</p>
 
-        <div v-if="stats" class="grid" style="margin-bottom: 24px">
-          <div class="card"><div class="stat">{{ stats.members_active }}</div>Membres actifs</div>
-          <div class="card"><div class="stat">{{ stats.members_pending }}</div>Demandes en attente</div>
-          <div class="card"><div class="stat">{{ formatMoney(stats.cotisations_month_total) }}</div>Cotisations de {{ stats.period }}</div>
-          <div class="card"><div class="stat">{{ stats.publications_published }}</div>Publications en ligne</div>
-          <div class="card"><div class="stat">{{ formatMoney(stats.donations_month_total) }}</div>Dons du mois</div>
-          <div class="card"><div class="stat">{{ formatMoney(stats.donations_total) }}</div>Total des dons</div>
+      <template v-if="stats && monthly">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-head"><span>Membres actifs</span></div>
+            <div class="kpi-value">{{ stats.members_active }}</div>
+            <div class="kpi-delta">+{{ newMembers }} ce mois-ci</div>
+            <div class="kpi-note">{{ stats.members_pending }} demande(s) en attente</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-head">
+              <span>Cotisations du mois</span>
+              <span v-if="cotDelta.pct !== null" class="pill" :class="{ down: !cotDelta.up }">{{ percent(cotDelta.pct) }}</span>
+            </div>
+            <div class="kpi-value">{{ formatMoney(stats.cotisations_month_total) }}</div>
+            <div class="kpi-delta" :class="{ down: !cotDelta.up }">{{ money(cotDelta.diff) }} depuis le mois dernier</div>
+            <div class="kpi-note">Mois en cours : {{ stats.period }}</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-head">
+              <span>Dons du mois</span>
+              <span v-if="donDelta.pct !== null" class="pill" :class="{ down: !donDelta.up }">{{ percent(donDelta.pct) }}</span>
+            </div>
+            <div class="kpi-value">{{ formatMoney(stats.donations_month_total) }}</div>
+            <div class="kpi-delta" :class="{ down: !donDelta.up }">{{ money(donDelta.diff) }} depuis le mois dernier</div>
+            <div class="kpi-note">Total des dons : {{ formatMoney(stats.donations_total) }}</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-head"><span>Publications en ligne</span></div>
+            <div class="kpi-value">{{ stats.publications_published }}</div>
+            <div class="kpi-delta"><RouterLink to="/admin/publications">Gérer les publications</RouterLink></div>
+            <div class="kpi-note">Actualités, projets et communiqués</div>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h2>Cotisations par mois</h2>
+            <div class="chart-total">{{ formatMoney(sum(monthly.cotisations)) }}</div>
+            <div class="muted">12 derniers mois</div>
+            <BarChart :labels="monthly.months" :values="monthly.cotisations" color="#17753F" :format-value="formatMoney" />
+          </div>
+          <div class="chart-card">
+            <h2>Dons par mois</h2>
+            <div class="chart-total">{{ formatMoney(sum(monthly.donations)) }}</div>
+            <div class="muted">12 derniers mois</div>
+            <BarChart :labels="monthly.months" :values="monthly.donations" color="#F0891A" :format-value="formatMoney" />
+          </div>
+          <div class="chart-card">
+            <h2>Nouveaux membres par mois</h2>
+            <div class="chart-total">{{ sum(monthly.new_members) }}</div>
+            <div class="muted">12 derniers mois</div>
+            <BarChart :labels="monthly.months" :values="monthly.new_members" color="#0F5A2E" :format-value="(v) => `${v} membre(s)`" />
+          </div>
         </div>
 
         <div class="card">
-          <h2 style="color: var(--green)">Membres</h2>
-          <form class="row" style="margin-bottom: 16px" @submit.prevent="loadMembers(1)">
-            <div class="field">
-              <label for="status">Statut</label>
-              <select id="status" v-model="status" @change="loadMembers(1)">
-                <option value="pending">En attente de validation</option>
-                <option value="active">Actifs</option>
-                <option value="suspended">Suspendus</option>
-                <option value="">Tous</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="q">Nom ou téléphone</label>
-              <input id="q" v-model="q" type="text" />
-            </div>
-            <div class="field" style="flex: 0 0 auto; justify-content: flex-end">
-              <button class="btn green" type="submit">Rechercher</button>
-            </div>
-          </form>
-
-          <p v-if="!members.length" class="muted">Aucun membre pour ce filtre.</p>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center">
+            <h2 style="color: var(--green); margin: 0">Demandes d'adhésion en attente</h2>
+            <RouterLink :to="{ path: '/admin/membres', query: { status: 'pending' } }" class="link">Voir tout</RouterLink>
+          </div>
+          <p v-if="!pending.length" class="muted">Aucune demande en attente.</p>
           <div v-else class="table-wrap">
             <table>
-              <thead><tr><th>Nom</th><th>Téléphone</th><th>Poste</th><th>Demande du</th><th>Statut</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Nom</th><th>Poste déclaré</th><th>Téléphone</th><th>Demande du</th><th>Actions</th></tr></thead>
               <tbody>
-                <tr v-for="m in members" :key="m.id">
+                <tr v-for="m in pending" :key="m.id">
                   <td>{{ m.name }}</td>
-                  <td>{{ m.phone }}</td>
                   <td>{{ m.mutuelle_role }}</td>
-                  <td>{{ formatDate(m.created_at) }}</td>
-                  <td><span class="badge" :class="badge(m.status)">{{ MEMBER_STATUS[m.status] || m.status }}</span></td>
+                  <td>{{ m.phone }}</td>
+                  <td>{{ formatDateShort(m.created_at) }}</td>
                   <td>
                     <div class="actions">
                       <RouterLink :to="`/admin/membres/${m.id}`" class="btn outline-green small">Dossier</RouterLink>
-                      <button v-if="m.status !== 'active'" class="btn green small" @click="act(m, 'approve')">
-                        {{ m.status === 'pending' ? 'Valider' : 'Réactiver' }}
-                      </button>
-                      <button v-if="m.status === 'pending'" class="btn danger small" @click="act(m, 'suspend')">Refuser</button>
-                      <button v-else-if="m.status === 'active'" class="btn danger small" @click="act(m, 'suspend')">Suspendre</button>
+                      <button class="btn green small" @click="act(m, 'approve')">Valider</button>
+                      <button class="btn danger small" @click="act(m, 'suspend')">Refuser</button>
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <Pager :page="page" :last="last" @change="loadMembers" />
         </div>
-      </div>
-    </section>
-  </div>
+      </template>
+      <p v-else-if="!error" class="muted">Chargement…</p>
+    </div>
+  </section>
 </template>

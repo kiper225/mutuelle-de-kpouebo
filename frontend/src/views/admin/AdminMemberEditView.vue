@@ -2,21 +2,25 @@
 import { reactive, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '../../api'
-import { MARITAL_STATUS, MEMBER_STATUS, formatDateShort } from '../../utils'
-import AdminNav from '../../components/AdminNav.vue'
+import { MARITAL_STATUS, MEMBER_STATUS, GENDER, formatDateShort } from '../../utils'
+import PhotoField from '../../components/PhotoField.vue'
 
 const route = useRoute()
 const id = route.params.id
 
 const member = ref(null)
 const form = reactive({
-  last_name: '', first_names: '', birth_date: '', birth_place: '', children_count: '',
-  marital_status: '', profession: '', residence: '', mutuelle_role: '',
+  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', children_count: '',
+  marital_status: '', profession: '', residence: '', mutuelle_role: '', phone: '', email: '',
 })
 const errors = ref({})
 const error = ref('')
 const success = ref('')
 const saving = ref(false)
+
+const newPhoto = ref(null)
+const photoKey = ref(0)
+const photoSaving = ref(false)
 
 const err = (name) => errors.value[name]?.[0] || ''
 
@@ -24,6 +28,7 @@ function fill(m) {
   Object.assign(form, {
     last_name: m.last_name || '',
     first_names: m.first_names || '',
+    gender: m.gender || '',
     birth_date: m.birth_date ? String(m.birth_date).slice(0, 10) : '',
     birth_place: m.birth_place || '',
     children_count: m.children_count ?? '',
@@ -31,6 +36,8 @@ function fill(m) {
     profession: m.profession || '',
     residence: m.residence || '',
     mutuelle_role: m.mutuelle_role || '',
+    phone: m.phone || '',
+    email: m.email || '',
   })
 }
 
@@ -63,100 +70,154 @@ async function save() {
   }
 }
 
+async function savePhoto() {
+  if (!newPhoto.value) return
+  photoSaving.value = true
+  error.value = ''
+  success.value = ''
+  try {
+    const fd = new FormData()
+    fd.append('photo', newPhoto.value)
+    member.value = await api.post(`/admin/members/${id}/photo`, fd)
+    newPhoto.value = null
+    photoKey.value++
+    success.value = 'Photo enregistrée.'
+  } catch (e) {
+    error.value = e.field('photo') || e.message
+  } finally {
+    photoSaving.value = false
+  }
+}
+
 onMounted(load)
 </script>
 
 <template>
-  <div>
-    <div class="page-banner"><div class="container"><h1>Dossier du membre</h1></div></div>
-    <section class="section alt">
-      <div class="container">
-        <AdminNav />
-        <p v-if="error" class="alert err">{{ error }}</p>
-        <p v-if="success" class="alert ok">{{ success }}</p>
+  <section class="section">
+    <div class="container">
+      <p v-if="error" class="alert err">{{ error }}</p>
+      <p v-if="success" class="alert ok">{{ success }}</p>
 
-        <template v-if="member">
-          <div class="card" style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+      <template v-if="member">
+        <div class="card" style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
             <img v-if="member.photo_url" :src="member.photo_url" alt="Photo du membre" style="width: 90px; height: 115px; object-fit: cover; border-radius: 6px" />
             <div>
               <h2 style="color: var(--green); margin: 0">{{ member.name }}</h2>
               <p class="muted" style="margin: 4px 0">
-                Statut : {{ MEMBER_STATUS[member.status] || member.status }}
-                · N° {{ member.member_number || 'non attribué (validez d\'abord l\'adhésion)' }}
-                · Adhésion : {{ formatDateShort(member.joined_at) || '—' }}
+                Statut : {{ MEMBER_STATUS[member.status] || member.status }} <br />
+                N° Membre : {{ member.member_number || 'non attribué (validez d\'abord l\'adhésion)' }} <br />
+                Adhésion : {{ formatDateShort(member.joined_at) || '—' }} <br />
               </p>
-              <p class="muted" style="margin: 0">Téléphone : {{ member.phone }}<span v-if="member.email"> · {{ member.email }}</span></p>
+              <p class="muted" style="margin: 0">Téléphone : {{ member.phone }} <br />
+                <span v-if="member.email">Email : {{ member.email || '—' }}</span>
+              </p>
             </div>
           </div>
 
-          <div class="card" style="margin-bottom: 24px">
-            <h2 style="color: var(--green)">Documents à imprimer</h2>
-            <p class="muted">Validez l'adhésion et vérifiez le poste avant d'imprimer : le numéro de membre n'existe qu'après validation.</p>
-            <div class="actions">
-              <RouterLink :to="`/imprimer/fiche/${member.id}`" target="_blank" class="btn orange small">Fiche d'adhésion</RouterLink>
-              <RouterLink :to="`/imprimer/badge/${member.id}`" target="_blank" class="btn orange small">Carte de membre</RouterLink>
-              <RouterLink :to="`/imprimer/carton/${member.id}`" target="_blank" class="btn orange small">Carton annuel</RouterLink>
+        <div class="card" style="margin-bottom: 24px">
+          <h2 style="color: var(--green)">Documents à imprimer</h2>
+          <p class="muted">Validez l'adhésion et vérifiez le poste avant d'imprimer : le numéro de membre n'existe qu'après validation.</p>
+          <div class="actions">
+            <RouterLink :to="`/imprimer/fiche/${member.id}`" target="_blank" class="btn orange small">Fiche d'adhésion</RouterLink>
+            <RouterLink :to="`/imprimer/badge/${member.id}`" target="_blank" class="btn orange small">Carte de membre</RouterLink>
+            <RouterLink :to="`/imprimer/carton/${member.id}`" target="_blank" class="btn orange small">Carton annuel</RouterLink>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 24px">
+          <h2 style="color: var(--green)">Photo du membre</h2>
+          <PhotoField
+            :key="photoKey"
+            v-model="newPhoto"
+            label="Nouvelle photo"
+            :aspect="3 / 4"
+            :output-width="600"
+            :current-url="member.photo_url || ''"
+          />
+          <button class="btn green small" type="button" :disabled="!newPhoto || photoSaving" style="margin-top: 12px" @click="savePhoto">
+            {{ photoSaving ? 'Envoi…' : 'Enregistrer la photo' }}
+          </button>
+        </div>
+
+        <form class="card form" @submit.prevent="save">
+          <h2 style="color: var(--green)">Modifier le dossier</h2>
+          <div class="row">
+            <div class="field">
+              <label for="last_name">Nom</label>
+              <input id="last_name" v-model="form.last_name" type="text" required />
+              <span class="error">{{ err('last_name') }}</span>
+            </div>
+            <div class="field">
+              <label for="first_names">Prénoms</label>
+              <input id="first_names" v-model="form.first_names" type="text" required />
+              <span class="error">{{ err('first_names') }}</span>
             </div>
           </div>
-
-          <form class="card form" @submit.prevent="save">
-            <h2 style="color: var(--green)">Modifier le dossier</h2>
-            <div class="row">
-              <div class="field">
-                <label for="last_name">Nom</label>
-                <input id="last_name" v-model="form.last_name" type="text" required />
-                <span class="error">{{ err('last_name') }}</span>
-              </div>
-              <div class="field">
-                <label for="first_names">Prénoms</label>
-                <input id="first_names" v-model="form.first_names" type="text" required />
-                <span class="error">{{ err('first_names') }}</span>
-              </div>
+          <div class="row">
+            <div class="field">
+              <label for="gender">Sexe</label>
+              <select id="gender" v-model="form.gender">
+                <option value="">À renseigner</option>
+                <option v-for="(label, key) in GENDER" :key="key" :value="key">{{ label }}</option>
+              </select>
+              <span class="error">{{ err('gender') }}</span>
             </div>
-            <div class="row">
-              <div class="field">
-                <label for="birth_date">Date de naissance</label>
-                <input id="birth_date" v-model="form.birth_date" type="date" />
-                <span class="error">{{ err('birth_date') }}</span>
-              </div>
-              <div class="field">
-                <label for="birth_place">Lieu de naissance</label>
-                <input id="birth_place" v-model="form.birth_place" type="text" />
-                <span class="error">{{ err('birth_place') }}</span>
-              </div>
-              <div class="field">
-                <label for="children_count">Nombre d'enfants</label>
-                <input id="children_count" v-model="form.children_count" type="number" min="0" max="30" />
-                <span class="error">{{ err('children_count') }}</span>
-              </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="birth_date">Date de naissance</label>
+              <input id="birth_date" v-model="form.birth_date" type="date" />
+              <span class="error">{{ err('birth_date') }}</span>
             </div>
-            <div class="row">
-              <div class="field">
-                <label for="marital_status">Statut matrimonial</label>
-                <select id="marital_status" v-model="form.marital_status">
-                  <option value="">Non précisé</option>
-                  <option v-for="(label, key) in MARITAL_STATUS" :key="key" :value="key">{{ label }}</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="profession">Profession</label>
-                <input id="profession" v-model="form.profession" type="text" />
-              </div>
+            <div class="field">
+              <label for="birth_place">Lieu de naissance</label>
+              <input id="birth_place" v-model="form.birth_place" type="text" />
+              <span class="error">{{ err('birth_place') }}</span>
             </div>
-            <div class="row">
-              <div class="field">
-                <label for="residence">Lieu de résidence</label>
-                <input id="residence" v-model="form.residence" type="text" />
-              </div>
-              <div class="field">
-                <label for="mutuelle_role">Poste au sein de la mutuelle</label>
-                <input id="mutuelle_role" v-model="form.mutuelle_role" type="text" />
-              </div>
+            <div class="field">
+              <label for="children_count">Nombre d'enfants</label>
+              <input id="children_count" v-model="form.children_count" type="number" min="0" max="30" />
+              <span class="error">{{ err('children_count') }}</span>
             </div>
-            <button class="btn green" type="submit" :disabled="saving" style="align-self: flex-start">Enregistrer</button>
-          </form>
-        </template>
-      </div>
-    </section>
-  </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="marital_status">Statut matrimonial</label>
+              <select id="marital_status" v-model="form.marital_status">
+                <option value="">Non précisé</option>
+                <option v-for="(label, key) in MARITAL_STATUS" :key="key" :value="key">{{ label }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="profession">Profession</label>
+              <input id="profession" v-model="form.profession" type="text" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="residence">Lieu de résidence</label>
+              <input id="residence" v-model="form.residence" type="text" />
+            </div>
+            <div class="field">
+              <label for="mutuelle_role">Poste au sein de la mutuelle</label>
+              <input id="mutuelle_role" v-model="form.mutuelle_role" type="text" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="phone">Téléphone</label>
+              <input id="phone" v-model="form.phone" type="tel" required />
+              <span class="error">{{ err('phone') }}</span>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" v-model="form.email" type="email" />
+              <span class="error">{{ err('email') }}</span>
+            </div>
+          </div>
+          <button class="btn green" type="submit" :disabled="saving" style="align-self: flex-start">Enregistrer</button>
+        </form>
+      </template>
+    </div>
+  </section>
 </template>

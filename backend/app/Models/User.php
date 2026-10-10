@@ -22,10 +22,11 @@ class User extends Authenticatable
     public const STATUS_SUSPENDED = 'suspended';
 
     public const MARITAL_STATUSES = ['celibataire', 'marie', 'divorce', 'veuf'];
+    public const GENDERS = ['M', 'F'];
 
     // `role`, `status`, `member_number` et `joined_at` ne sont volontairement PAS assignables en masse.
     protected $fillable = [
-        'name', 'last_name', 'first_names', 'email', 'phone',
+        'name', 'last_name', 'first_names', 'gender', 'email', 'phone',
         'birth_date', 'birth_place', 'children_count', 'marital_status',
         'profession', 'residence', 'mutuelle_role', 'photo_path', 'password',
     ];

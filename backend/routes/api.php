@@ -11,6 +11,7 @@ use App\Http\Controllers\PublicationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentStatusController;
 use App\Http\Controllers\PaystackWebhookController;
+use App\Http\Controllers\ProfileController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -41,6 +42,9 @@ Route::prefix('v1')->group(function () {
             Route::get('cotisations', [CotisationController::class, 'index']);
             Route::post('cotisations', [CotisationController::class, 'store']);
 
+            Route::post('me/profile', [ProfileController::class, 'update']);
+            Route::post('me/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:5,1');
+
             // Messagerie entre membres
             Route::get('directory', [ConversationController::class, 'directory']);
             Route::get('conversations', [ConversationController::class, 'index']);
@@ -57,6 +61,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('members/{user}/suspend', [Admin\MemberController::class, 'suspend']);
                 Route::get('members/{user}', [Admin\MemberController::class, 'show']);
                 Route::put('members/{user}', [Admin\MemberController::class, 'update']);
+                Route::post('members/{user}/photo', [Admin\MemberController::class, 'updatePhoto']);
 
                 Route::apiResource('publications', Admin\PublicationController::class);
 
@@ -69,6 +74,8 @@ Route::prefix('v1')->group(function () {
 
                 Route::get('donations', [Admin\DonationController::class, 'index']);
                 Route::post('donations', [Admin\DonationController::class, 'recordOffline']);
+                
+                Route::get('stats/monthly', [Admin\StatsController::class, 'monthly']);
             });
         });
     });

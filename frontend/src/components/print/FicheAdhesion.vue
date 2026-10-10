@@ -1,6 +1,6 @@
 <script setup>
 import { site } from '../../content'
-import { MARITAL_STATUS, formatDateShort } from '../../utils'
+import { MARITAL_STATUS, GENDER, formatDateShort } from '../../utils'
 
 defineProps({ member: { type: Object, required: true } })
 </script>
@@ -33,6 +33,7 @@ defineProps({ member: { type: Object, required: true } })
       <tbody>
         <tr><td class="label">Nom</td><td>{{ member.last_name }}</td></tr>
         <tr><td class="label">Prénoms</td><td>{{ member.first_names }}</td></tr>
+        <tr><td class="label">Genre</td><td>{{ GENDER[member.gender] || '' }}</td></tr>
         <tr><td class="label">Date de naissance</td><td>{{ formatDateShort(member.birth_date) }}</td></tr>
         <tr><td class="label">Lieu de naissance</td><td>{{ member.birth_place }}</td></tr>
         <tr><td class="label">Nombre d'enfants</td><td>{{ member.children_count }}</td></tr>

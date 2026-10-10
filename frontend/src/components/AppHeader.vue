@@ -3,6 +3,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, isLoggedIn, isAdmin, logout, refreshUnread } from '../auth'
 import { site } from '../content'
+import { EnvelopeIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
 const router = useRouter()
@@ -60,7 +61,7 @@ async function onLogout() {
   <div class="app-header">
     <div class="topbar">
       <div class="container">
-        <span>{{ site.name }}</span>
+        <span>RUMBO DE KPOUEBO</span>
         <span>Solidarité · Entraide · Développement</span>
       </div>
     </div>
@@ -68,6 +69,7 @@ async function onLogout() {
       <div class="container">
         <RouterLink to="/" class="brand">
           <img src="/logo.jpg" alt="Logo de la Mutuelle de Développement de Kpouèbo"  />
+          <p style="max-width: 120px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em;">{{ site.name }}</p>
         </RouterLink>
         <nav class="nav" aria-label="Navigation principale">
           <RouterLink to="/">Accueil</RouterLink>
@@ -81,8 +83,13 @@ async function onLogout() {
           <RouterLink v-else-if="isLoggedIn" to="/espace" class="btn orange small">Mon espace</RouterLink>
           <RouterLink v-else to="/espace" class="btn orange small">Espace membres</RouterLink>
           <RouterLink to="/don" class="btn green small">Faire un don</RouterLink>
-          <RouterLink v-if="isLoggedIn" to="/messagerie">Messagerie<span v-if="auth.unread" class="badge-count">{{ auth.unread }}</span></RouterLink>
-          <button v-if="isLoggedIn" class="linklike" type="button" @click="onLogout">Déconnexion ({{ auth.user.first_names || auth.user.name }})</button>
+          <RouterLink v-if="isLoggedIn" to="/messagerie">
+            <EnvelopeIcon class="size-12"/>
+            <span v-if="auth.unread" class="badge-count">{{ auth.unread }}</span>
+          </RouterLink>
+          <button v-if="isLoggedIn" class="linklike" type="button" @click="onLogout">
+            <UserCircleIcon class="size-12 text-blue-500"/> {{ auth.user.name }}
+          </button>
         </nav>
       </div>
     </header>
