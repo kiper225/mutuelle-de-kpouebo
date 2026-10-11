@@ -18,10 +18,6 @@ const sending = ref(false)
 
 const err = (name) => errors.value[name]?.[0] || ''
 
-onBeforeUnmount(() => {
-  if (preview.value) URL.revokeObjectURL(preview.value)
-})
-
 async function submit() {
   if (!photo.value) {
     errors.value = { photo: ['La photo est obligatoire.'] }

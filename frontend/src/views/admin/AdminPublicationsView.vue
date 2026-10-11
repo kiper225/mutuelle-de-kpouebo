@@ -141,33 +141,36 @@ onMounted(() => load())
               </select>
             </div>
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="excerpt">Résumé (facultatif, 500 caractères maximum)</label>
             <textarea id="excerpt" v-model="form.excerpt" rows="2" maxlength="500"></textarea>
             <span class="error">{{ err('excerpt') }}</span>
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="body">Contenu</label>
             <textarea id="body" v-model="form.body" rows="8" required></textarea>
             <span class="error">{{ err('body') }}</span>
           </div>
-          <div class="field">
-            <label for="cover">Image de couverture (facultatif{{ form.id ? ', remplace l’actuelle' : '' }})</label>
-            <PhotoField
-              :key="fileKey"
-              v-model="form.cover"
-              label="Image de couverture (facultatif)"
-              :aspect="16 / 9"
-              :output-width="1280"
-              :current-url="form.id && !form.remove_cover ? form.cover_url : ''"
-              :error="err('cover')"
-              hint="Vous pourrez recadrer l'image avant l'envoi."
-            />
-            <label v-if="form.id && form.cover_url && !form.cover" class="check">
-              <input v-model="form.remove_cover" type="checkbox" />
-              Supprimer l'image actuelle
-            </label>
-            <span class="error">{{ err('cover') }}</span>
+          <label for="cover">Image de couverture (facultatif{{ form.id ? ', remplace l’actuelle' : '' }})</label>
+          <div class="p-3 bg-layer border border-layer-line rounded-xl">
+            <div class="mb-1 flex justify-between items-center">
+              <PhotoField
+                :key="fileKey"
+                v-model="form.cover"
+                label="Image de couverture (facultatif)"
+                :aspect="16 / 9"
+                :output-width="1280"
+                :current-url="form.id && !form.remove_cover ? form.cover_url : ''"
+                :error="err('cover')"
+                hint="Vous pourrez recadrer l'image avant l'envoi."
+                class="flex items-center gap-x-3"
+              />
+              <label v-if="form.id && form.cover_url && !form.cover" class="check">
+                <input v-model="form.remove_cover" type="checkbox" />
+                Supprimer l'image actuelle
+              </label>
+              <span class="error">{{ err('cover') }}</span>
+            </div>
           </div>
           <label class="check">
             <input v-model="form.publish" type="checkbox" />

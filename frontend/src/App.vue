@@ -5,19 +5,17 @@ import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 
 const route = useRoute()
-// Les pages d'administration ont leur propre mise en page (sidebar + barre du haut).
-const isAdminLayout = computed(() => route.matched.some((r) => r.meta.layout === 'admin'))
+// Les pages « admin » et « app » (messagerie) ont leur propre mise en page, sans l'en-tête ni le pied de page du site.
+const bareLayout = computed(() => route.matched.some((r) => r.meta.layout === 'admin' || r.meta.layout === 'app'))
 </script>
 
 <template>
-  <div v-if="isAdminLayout">
-    <RouterView />
-  </div>
-  <div v-else>
+  <RouterView v-if="bareLayout" />
+  <template v-else>
     <AppHeader />
     <main>
       <RouterView />
     </main>
     <AppFooter />
-  </div>
+  </template>
 </template>

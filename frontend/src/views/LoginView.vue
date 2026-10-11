@@ -32,11 +32,11 @@ async function submit() {
       <div class="container" style="max-width: 480px">
         <form class="card form" @submit.prevent="submit">
           <p v-if="error" class="alert err">{{ error }}</p>
-          <div class="field">
+          <div class="fiel">
             <label for="login">Téléphone ou email</label>
             <input id="login" v-model="loginValue" type="text" autocomplete="username" required />
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="password">Mot de passe</label>
             <input id="password" v-model="password" type="password" autocomplete="current-password" required />
           </div>

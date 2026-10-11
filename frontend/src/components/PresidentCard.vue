@@ -9,7 +9,7 @@ const p = site.president
     <div v-else class="photo ph">[PHOTO DU PRÉSIDENT]</div>
     <div class="text">
       <div class="eyebrow-green">Mot du Président</div>
-      <p class="prose">{{ p.message }}</p>
+      <p class="prose">{{ p.message }}</p><br /><br />
       <b>{{ p.name }}</b><br />
       <span class="muted">{{ p.role }}</span>
     </div>

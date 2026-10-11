@@ -98,12 +98,12 @@ async function submit() {
               <span class="error">{{ err('donor_phone') }}</span>
             </div>
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="email">Email (facultatif)</label>
             <input id="email" v-model="form.donor_email" type="email" />
             <span class="error">{{ err('donor_email') }}</span>
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="message">Message (facultatif)</label>
             <textarea id="message" v-model="form.message" rows="3" maxlength="500"></textarea>
           </div>

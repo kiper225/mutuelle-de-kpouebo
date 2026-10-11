@@ -13,7 +13,7 @@ const routes = [
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { guestOnly: true } },
   { path: '/espace', component: () => import('./views/MemberAreaView.vue'), meta: { requiresAuth: true } },
   { path: '/profil', component: () => import('./views/ProfileView.vue'), meta: { requiresAuth: true } },
-  { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true } },
+  { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true, layout: 'app' } },
   { path: '/imprimer/:type/:id', component: () => import('./views/PrintView.vue'), meta: { requiresAdmin: true } },
   {
     path: '/admin',
@@ -52,6 +52,7 @@ const routes = [
       },
     ],
   },
+  { path: '/recherche', component: () => import('./views/SearchView.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
@@ -60,7 +61,7 @@ const router = createRouter({
   routes,
   scrollBehavior(to, from, saved) {
     if (saved) return saved
-    if (to.hash) return { el: to.hash, top: 16, behavior: 'smooth' }
+    if (to.hash) return { el: to.hash, top: 170, behavior: 'smooth' }
     return { top: 0 }
   },
 })

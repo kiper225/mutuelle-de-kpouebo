@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentStatusController;
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
     Route::get('publications', [PublicationController::class, 'index']);
     Route::get('publications/{slug}', [PublicationController::class, 'show']);
+    Route::get('search', SearchController::class)->middleware('throttle:60,1');
 
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -74,7 +76,7 @@ Route::prefix('v1')->group(function () {
 
                 Route::get('donations', [Admin\DonationController::class, 'index']);
                 Route::post('donations', [Admin\DonationController::class, 'recordOffline']);
-                
+
                 Route::get('stats/monthly', [Admin\StatsController::class, 'monthly']);
             });
         });

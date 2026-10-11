@@ -94,7 +94,7 @@ onMounted(() => load())
             </select>
           </div>
         </div>
-        <div class="field">
+        <div class="fiel">
           <label for="dm">Note (facultatif)</label>
           <input id="dm" v-model="form.message" type="text" maxlength="500" />
         </div>
