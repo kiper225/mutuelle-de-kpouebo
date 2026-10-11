@@ -7,9 +7,10 @@ const year = new Date().getFullYear()
   <div>
     <footer class="footer">
       <div class="container">
-        <div style="flex: 2 1 260px">
-          <img src="/logo.jpg" alt="Logo" />
-          <div>{{ site.name }} : {{ site.footerText }}</div>
+        <div style="flex: 2 1 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+          <img src="/logo.jpg" alt="Logo" class="" />
+          <div>{{ site.footerText }}</div>
+          <div>{{ site.footerRealisation }}</div>
         </div>
         <div>
           <b>Découvrir la mutuelle</b><br />

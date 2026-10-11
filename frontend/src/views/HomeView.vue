@@ -66,7 +66,7 @@ onMounted(async () => {
 
     <section class="section alt">
       <div class="container">
-        <h2 style="color: var(--green)">Dernières actualités</h2>
+        <h2 style="color: var(--green)" class="text-3xl md:text-4xl font-bold">Dernières actualités</h2>
         <p v-if="loadError" class="alert err">{{ loadError }}</p>
         <p v-else-if="!latest.length" class="muted">Aucune publication pour le moment.</p>
         <NewsCarousel v-else :items="latest" />

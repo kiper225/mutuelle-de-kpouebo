@@ -6,10 +6,11 @@ export const site = {
   slogan: 'Unir, dynamiser, développer Kpouèbo',
   hero: 'Une jeunesse au coeur du développement de son village.',
   heroImage: '/img/hero.jpg', // photo plein écran du village ou des membres
-  about: '[Présentation de la mutuelle en 2 ou 3 phrases.]',
+  about: 'notre mutuelle a pour objectif de rassembler les jeunes du village et de la diaspora afin de promouvoir le développement économique, social et culturel de Kpouèbo.',
   history: '[Histoire de la mutuelle : date de création, fondateurs, grandes étapes.]',
   videoUrl: 'https://www.youtube.com/watch?v=Aa5RJkpntAM', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'
-  footerText: '[Courte description de la mutuelle.]',
+  footerText: '© 2024 Mutuelle de Développement de Kpouèbo.',
+  footerRealisation: 'Réalisé par GERVAIS KIPRE. Tous droits réservés.',
   president: {
     name: 'M. KONAN Bah Marcel',
     role: 'Président du Comité ADHOC de la Mutuelle du RUMBO.',
@@ -42,6 +43,8 @@ export const site = {
     { name: '[Nom Prénom 2]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
     { name: '[Nom Prénom 3]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
     { name: '[Nom Prénom 4]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
+    { name: '[Nom Prénom 5]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
+    { name: '[Nom Prénom 6]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
   ],
   don: {
     intro: 'Pourquoi donner : à quels projets servent les dons.',
@@ -58,24 +61,24 @@ export const site = {
   slides: [
     {
       eyebrow: 'UNE SEULE MISSION',
-      title: 'Unir, dynamiser, développer Kpouèbo',
-      text: '[Phrase d’accroche : ce que la mutuelle apporte à son village.]',
-      image: '',
+      title: 'Former, Éduquer, dynamiser la jeunesse pour développer Kpouèbo',
+      text: 'Notre mutuelle a pour objectif de rassembler les jeunes du village et de la diaspora afin de promouvoir le développement économique, social et culturel de Kpouèbo.',
+      image: '../public/img/eleve.webp',
       cta: { label: 'Devenir membre', to: '/inscription' },
       cta2: { label: 'Faire un don', to: '/don' },
     },
     {
       eyebrow: 'NOS CHANTIERS',
-      title: '[Titre : un projet en cours]',
-      text: '[Quelques mots sur ce projet.]',
-      image: '',
+      title: 'Bâtir ensemble pour un village plus fort',
+      text: 'Nos projets en cours visent à améliorer les infrastructures et les services dans notre communauté.',
+      image: '../public/img/centresante.jpg',
       cta: { label: 'Voir les projets', to: '/chantiers?category=projet_en_cours' },
     },
     {
       eyebrow: 'ENSEMBLE',
-      title: '[Titre : soutenir la mutuelle]',
-      text: '[Pourquoi donner ou adhérer.]',
-      image: '',
+      title: 'Tous unis pour une seule cause',
+      text: 'Chez nous, la solidarité est une valeur fondamentale. Nous croyons que l’union fait la force et que chaque membre a un rôle à jouer dans le développement de notre village.',
+      image: '../public/img/hero.jpg',
       cta: { label: 'Faire un don', to: '/don' },
     },
   ],
@@ -93,7 +96,7 @@ export const site = {
     items: [
       { name: 'KOFFI BENOIT AHOSSI', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’il ou elle a apporté à Kpouèbo.]', photo: '../public/img/ahossi.jpeg' },
       { name: 'KOUAKOU TELESFORT SARAKA', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’elle a apporté à Kpouèbo.]', photo: '../public/img/telesfort.jfif' },
-      { name: 'KOUAKOU RAYMOND KONAN', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’il a apporté à Kpouèbo.]', photo: '../public/img/raymond.jpg' },
+      { name: 'KOUAKOU RAYMOND KONAN', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’il a apporté à Kpouèbo.]', photo: '../public/img/raymond2.jpg' },
       { name: 'NANAN MOLOU II', role: 'Defunt Chef du village de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’elle a apporté à Kpouèbo.]', photo: '../public/img/molou.jpeg' },
       { name: 'KONAN KOFFI ALBERT', role: 'Membre du bureau', text: '[Quelques mots sur son parcours et sur ce qu’il a apporté à Kpouèbo.]', photo: '../public/img/hounkpe.jpg' },
       { name: 'BROU ADOLPHE KOUAME', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’elle a apporté à Kpouèbo.]', photo: '../public/img/adolphe.jpg' },
