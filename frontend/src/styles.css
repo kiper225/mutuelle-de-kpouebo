@@ -22,7 +22,7 @@ h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
 .muted { color: var(--muted); font-size: 14px; }
 
 /* En-tête */
-.app-header{position: fixed; width: 100%;}
+.app-header{position: fixed; width: 100%; z-index: 100; top: 0; left: 0; }
 .topbar { background: var(--ink); color: #fff; font-size: 12px; padding: 8px 0;}
 .topbar .container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
 .header { background: #fff; border-bottom: 1px solid var(--line); }
@@ -128,7 +128,7 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 
 /* Sections de la page d'accueil */
 .eyebrow-green { color: var(--green); font-weight: 700; margin-bottom: 8px; }
-.president { display: flex; flex-wrap: wrap; padding: 0; overflow: hidden; max-width: 1000px; margin: 0 auto; margin-top: -150px ; z-index: 1; position: relative; }
+.president { display: flex; flex-wrap: wrap; padding: 0; overflow: hidden; max-width: 1000px; margin: 0 auto; margin-top: -110px ; z-index: 1; position: relative; }
 .president .photo { flex: 1 1 250px; min-height: 280px; width: 100%; object-fit: cover; }
 .president .text { flex: 1 1 250px; padding: 32px; }
 .video { position: relative; max-width: 720px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; flex-direction: column; gap: 8px; }
@@ -316,7 +316,7 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 .sr-text { display: block; font-size: 13px; color: var(--muted); }
 
 /* Carrousel */
-.hero-wrap { padding-top: 0px; padding-bottom: 8px; }
+.hero-wrap { padding-top: 7%; padding-bottom: 8px; }
 .carousel { position: relative; height: clamp(320px, 42vw, 800px); overflow: hidden; background: var(--green-dark); touch-action: pan-y; }
 .slide { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 clamp(24px, 6vw, 72px); background-size: cover; background-position: center; color: #fff; opacity: 0; visibility: hidden; transition: opacity .6s ease, visibility .6s; }
 .slide.active { opacity: 1; visibility: visible; }
@@ -330,7 +330,7 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 .car-btn:hover { background: #fff; }
 .car-btn.prev { left: 12px; }
 .car-btn.next { right: 12px; }
-.car-dots { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+.car-dots { position: absolute; bottom: 60px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px;}
 .car-dots button { width: 10px; height: 10px; border-radius: 50%; border: 0; padding: 0; background: rgba(255, 255, 255, .5); cursor: pointer; }
 .car-dots button.active { background: var(--orange); width: 26px; border-radius: 999px; }
 @media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
@@ -476,3 +476,12 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 @media (max-width: 700px) { .face-slide { flex-basis: calc((100% - 20px) / 2); } }
 @media (max-width: 480px) { .face-slide { flex-basis: 100%; } }
 @media (prefers-reduced-motion: reduce) { .face-card { transition: none; } }
+
+/* Listes de gestion (carrousel d'accueil, visages) */
+.manage-list { list-style: none; margin: 0; padding: 0; }
+.manage-item { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.manage-thumb { display: inline-block; width: 120px; height: 52px; object-fit: cover; border-radius: 6px; background: var(--green); flex: none; }
+.manage-thumb.portrait { width: 48px; height: 60px; }
+.manage-initial { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 22px; }
+.manage-info { flex: 1 1 220px; min-width: 0; }
+.manage-info b, .manage-info .muted { display: block; }

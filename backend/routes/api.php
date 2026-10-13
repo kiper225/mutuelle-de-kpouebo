@@ -13,6 +13,8 @@ use App\Http\Controllers\PaymentStatusController;
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HomeContentController;
+use App\Models\SectionItem;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -23,6 +25,7 @@ Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::post('donations', [DonationController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('home-content', HomeContentController::class);
 
     Route::post('webhooks/payments', PaymentWebhookController::class);   // générique (utilisé par les tests)
     Route::post('webhooks/paystack', PaystackWebhookController::class);  // Paystack, authentifié par signature
@@ -76,6 +79,20 @@ Route::prefix('v1')->group(function () {
 
                 Route::get('donations', [Admin\DonationController::class, 'index']);
                 Route::post('donations', [Admin\DonationController::class, 'recordOffline']);
+                Route::post('hero-slides/reorder', [Admin\HeroSlideController::class, 'reorder']);
+                Route::apiResource('hero-slides', Admin\HeroSlideController::class)->except(['show']);
+
+                Route::post('faces/reorder', [Admin\FaceController::class, 'reorder']);
+                Route::apiResource('faces', Admin\FaceController::class)->except(['show']);
+                Route::prefix('sections/{section}')
+                ->where(['section' => implode('|', SectionItem::SECTIONS)])
+                ->group(function () {
+                    Route::post('reorder', [Admin\SectionItemController::class, 'reorder']);
+                    Route::get('/', [Admin\SectionItemController::class, 'index']);
+                    Route::post('/', [Admin\SectionItemController::class, 'store']);
+                    Route::put('{item}', [Admin\SectionItemController::class, 'update']);
+                    Route::delete('{item}', [Admin\SectionItemController::class, 'destroy']);
+                });
 
                 Route::get('stats/monthly', [Admin\StatsController::class, 'monthly']);
             });

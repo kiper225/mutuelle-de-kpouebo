@@ -64,7 +64,7 @@ async function onLogout() {
 </script>
 
 <template>
-  <div>
+  <div class="app-header">
     <div class="topbar">
       <div class="container">
         <span>{{ site.name }}</span>

@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
             <span v-else class="face-initial" aria-hidden="true">{{ initial(f.name) }}</span>
           </div>
           <div class="face-body">
-            <h3>{{ f.name }}</h3>
+            <h3 class="text-3xl md:text-4xl font-bold">{{ f.name }}</h3>
             <div class="face-role">{{ f.role }}</div>
             <p v-if="f.text">{{ f.text }}</p>
           </div>

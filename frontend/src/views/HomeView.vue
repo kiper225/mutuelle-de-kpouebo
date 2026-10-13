@@ -13,6 +13,21 @@ import FacesCarousel from '../components/FacesCarousel.vue'
 
 const latest = ref([])
 const loadError = ref('')
+// Carrousel d'accueil et visages : gérés depuis l'administration.
+// Sans diapositive enregistrée, on garde celles de content.js.
+const slides = ref(site.slides || [])
+const faces = ref([])
+
+const mapSlide = (s) => ({
+  eyebrow: s.eyebrow || '',
+  title: s.title,
+  text: s.text || '',
+  image: s.image_url || '',
+  cta: s.cta_label && s.cta_to ? { label: s.cta_label, to: s.cta_to } : null,
+  cta2: s.cta2_label && s.cta2_to ? { label: s.cta2_label, to: s.cta2_to } : null,
+})
+
+const mapFace = (f) => ({ name: f.name, role: f.role || '', text: f.text || '', photo: f.photo_url || '' })
 
 
 onMounted(async () => {
@@ -22,12 +37,20 @@ onMounted(async () => {
   } catch (e) {
     loadError.value = e.message
   }
+
+  try {
+    const home = await api.get('/home-content')
+    if (home.slides.length) slides.value = home.slides.map(mapSlide)
+    faces.value = home.faces.map(mapFace)
+  } catch {
+    /* on garde les diapositives de content.js */
+  }
 })
 </script>
 
 <template>
   <main>
-    <HeroCarousel />
+    <HeroCarousel :slides="slides" />
 
     <section class="section alt">
       <div class="container"><PresidentCard /></div>
@@ -94,11 +117,11 @@ onMounted(async () => {
         <BureauGrid />
       </div>
     </section>
-    <section v-if="site.faces?.items?.length" class="section">
+    <section v-if="faces.length" class="section">
       <div class="container">
-        <h2 class="center" style="color: var(--green)">{{ site.faces.title }}</h2>
-        <p v-if="site.faces.intro" class="center narrow" style="margin-bottom: 32px">{{ site.faces.intro }}</p>
-        <FacesCarousel :items="site.faces.items" />
+        <h2 class="center text-3xl md:text-4xl font-bold" style="color: var(--green)">{{ site.faces?.title || 'Visages emblématiques de Kpouèbo' }}</h2>
+        <p v-if="site.faces?.intro" class="center narrow" style="margin-bottom: 32px">{{ site.faces.intro }}</p>
+        <FacesCarousel :items="faces" />
       </div>
     </section>
   </main>

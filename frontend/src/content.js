@@ -9,12 +9,12 @@ export const site = {
   about: 'notre mutuelle a pour objectif de rassembler les jeunes du village et de la diaspora afin de promouvoir le développement économique, social et culturel de Kpouèbo.',
   history: '[Histoire de la mutuelle : date de création, fondateurs, grandes étapes.]',
   videoUrl: 'https://www.youtube.com/watch?v=Aa5RJkpntAM', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'
-  footerText: '© 2024 Mutuelle de Développement de Kpouèbo.',
+  footerText: '© 2026 Mutuelle de Développement de Kpouèbo.',
   footerRealisation: 'Réalisé par GERVAIS KIPRE. Tous droits réservés.',
   president: {
     name: 'M. KONAN Bah Marcel',
     role: 'Président du Comité ADHOC de la Mutuelle du RUMBO.',
-    message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure.',
+    message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure,',
     photo: '',
   },
   axes: [

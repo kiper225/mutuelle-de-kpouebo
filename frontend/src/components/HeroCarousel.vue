@@ -1,20 +1,24 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { site } from '../content'
 
-// Sans diapositives dans content.js, on reconstruit une diapositive à partir de l'ancien bandeau.
-const slides = site.slides?.length
-  ? site.slides
-  : [
-      {
-        eyebrow: 'UNE SEULE MISSION',
-        title: site.slogan,
-        text: site.hero,
-        image: site.heroImage || '',
-        cta: { label: 'Devenir membre', to: '/inscription' },
-        cta2: { label: 'Faire un don', to: '/don' },
-      },
-    ]
+const props = defineProps({ slides: { type: Array, default: () => [] } })
+
+// Sans diapositive (ni en base ni dans content.js), on reconstruit une diapositive à partir de l'ancien bandeau.
+const list = computed(() =>
+  props.slides.length
+    ? props.slides
+    : [
+        {
+          eyebrow: 'UNE SEULE MISSION',
+          title: site.slogan,
+          text: site.hero,
+          image: site.heroImage || '',
+          cta: { label: 'Devenir membre', to: '/inscription' },
+          cta2: { label: 'Faire un don', to: '/don' },
+        },
+      ],
+)
 
 const index = ref(0)
 const paused = ref(false)
@@ -23,7 +27,7 @@ let startX = null
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-const go = (i) => (index.value = (i + slides.length) % slides.length)
+const go = (i) => (index.value = (i + list.value.length) % list.value.length)
 const next = () => go(index.value + 1)
 const prev = () => go(index.value - 1)
 
@@ -34,7 +38,7 @@ function stop() {
 
 function start() {
   stop()
-  if (reduceMotion || slides.length < 2) return
+  if (reduceMotion || list.value.length < 2) return
   timer = setInterval(() => {
     if (!paused.value) next()
   }, 6000)
@@ -53,8 +57,14 @@ function onUp(event) {
 
 const background = (slide) =>
   slide.image
-    ? { backgroundImage: `linear-gradient(90deg, rgba(15, 90, 46, .85), rgba(15, 90, 46, .3)), url(${slide.image})` }
+    ? { backgroundImage: `linear-gradient(90deg, rgba(15, 90, 46, .75), rgba(15, 90, 46, .3)), url(${slide.image})` }
     : {}
+
+// Quand les diapositives changent (chargées depuis le serveur), on repart de la première.
+watch(list, () => {
+  index.value = 0
+  start()
+})
 
 onMounted(start)
 onBeforeUnmount(stop)
@@ -72,20 +82,20 @@ onBeforeUnmount(stop)
   >
     <div class="carousel" @pointerdown="onDown" @pointerup="onUp">
       <div
-        v-for="(s, i) in slides"
+        v-for="(s, i) in list"
         :key="i"
         class="slide"
         :class="{ active: i === index }"
         :style="background(s)"
         role="group"
         aria-roledescription="slide"
-        :aria-label="`${i + 1} sur ${slides.length}`"
+        :aria-label="`${i + 1} sur ${list.length}`"
       >
         <div class="slide-content">
-          <div class="eyebrow">{{ s.eyebrow }}</div>
+          <div v-if="s.eyebrow" class="eyebrow">{{ s.eyebrow }}</div>
           <h1 v-if="i === 0">{{ s.title }}</h1>
           <h2 v-else>{{ s.title }}</h2>
-          <p>{{ s.text }}</p>
+          <p v-if="s.text">{{ s.text }}</p>
           <div class="row">
             <RouterLink v-if="s.cta" :to="s.cta.to" class="btn orange">{{ s.cta.label }}</RouterLink>
             <RouterLink v-if="s.cta2" :to="s.cta2.to" class="btn outline">{{ s.cta2.label }}</RouterLink>
@@ -93,12 +103,12 @@ onBeforeUnmount(stop)
         </div>
       </div>
 
-      <template v-if="slides.length > 1">
+      <template v-if="list.length > 1">
         <button class="car-btn prev" type="button" aria-label="Diapositive précédente" @click="prev">‹</button>
         <button class="car-btn next" type="button" aria-label="Diapositive suivante" @click="next">›</button>
         <div class="car-dots">
           <button
-            v-for="(s, i) in slides"
+            v-for="(s, i) in list"
             :key="i"
             type="button"
             :class="{ active: i === index }"

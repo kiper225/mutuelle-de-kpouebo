@@ -49,6 +49,30 @@ const routes = [
         path: 'donations',
         component: () => import('./views/admin/AdminDonationsView.vue'),
         meta: { title: 'Dons', subtitle: 'Dons reçus en ligne et hors ligne.' },
+      },{
+        path: 'carrousel',
+        component: () => import('./views/admin/AdminHeroSlidesView.vue'),
+        meta: { title: 'Carrousel d’accueil', subtitle: 'Diapositives affichées en haut de la page d’accueil.' },
+      },
+      {
+        path: 'visages',
+        component: () => import('./views/admin/AdminFacesView.vue'),
+        meta: { title: 'Visages emblématiques', subtitle: 'Personnalités présentées sur la page d’accueil.' },
+      },
+      {
+        path: 'bureau',
+        component: () => import('./views/admin/AdminSectionView.vue'),
+        meta: { section: 'bureau', title: 'Bureau de la mutuelle', subtitle: 'Membres du bureau affichés sur l’accueil et la page « La mutuelle ».' },
+      },
+      {
+        path: 'axes',
+        component: () => import('./views/admin/AdminSectionView.vue'),
+        meta: { section: 'axes', title: 'Axes d’action', subtitle: 'Les grands axes affichés sur la bande verte de l’accueil.' },
+      },
+      {
+        path: 'valeurs',
+        component: () => import('./views/admin/AdminSectionView.vue'),
+        meta: { section: 'valeurs', title: 'Valeurs', subtitle: 'Les valeurs qui guident l’action de la mutuelle.' },
       },
     ],
   },

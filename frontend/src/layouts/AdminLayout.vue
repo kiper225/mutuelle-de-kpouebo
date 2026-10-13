@@ -27,6 +27,16 @@ const groups = [
       { to: '/admin/donations', label: 'Dons', icon: 'heart' },
     ],
   },
+  {
+    label: 'Site',
+    items: [
+      { to: '/admin/carrousel', label: 'Carrousel d’accueil', icon: 'image' },
+      { to: '/admin/visages', label: 'Visages emblématiques', icon: 'star' },
+      { to: '/admin/bureau', label: 'Bureau de la mutuelle', icon: 'users' },
+      { to: '/admin/axes', label: 'Axes d’action', icon: 'target' },
+      { to: '/admin/valeurs', label: 'Valeurs', icon: 'heart' },
+    ],
+  },
 ]
 
 const title = computed(() => route.meta.title || 'Administration')
