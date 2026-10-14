@@ -52,3 +52,19 @@ export function formatDateShort(value) {
   const [y, m, d] = String(value).slice(0, 10).split('-')
   return `${d}/${m}/${y}`
 }
+
+/** « il y a 6 h », « il y a 3 j », ou « Le 12 octobre à 15:17 » au-delà d'une semaine. */
+export function timeAgo(value) {
+  if (!value) return ''
+  const d = new Date(value)
+  const seconds = (Date.now() - d.getTime()) / 1000
+  if (seconds < 60) return "À l'instant"
+  if (seconds < 3600) return `il y a ${Math.floor(seconds / 60)} min`
+  if (seconds < 86400) return `il y a ${Math.floor(seconds / 3600)} h`
+  if (seconds < 604800) return `il y a ${Math.floor(seconds / 86400)} j`
+
+  const sameYear = d.getFullYear() === new Date().getFullYear()
+  const day = d.toLocaleDateString('fr-FR', sameYear ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' })
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return `Le ${day} à ${time}`
+}

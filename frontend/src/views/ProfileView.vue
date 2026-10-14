@@ -140,7 +140,7 @@ async function changePassword() {
               <span class="error">{{ err('profession') }}</span>
             </div>
           </div>
-          <div class="field">
+          <div class="fiel">
             <label for="residence">Lieu de résidence</label>
             <input id="residence" v-model="form.residence" type="text" />
             <span class="error">{{ err('residence') }}</span>
@@ -154,15 +154,16 @@ async function changePassword() {
           <h2 style="color: var(--green)">Changer mon mot de passe</h2>
           <p v-if="pwdError" class="alert err">{{ pwdError }}</p>
           <p v-if="pwdSuccess" class="alert ok">{{ pwdSuccess }}</p>
-          <div class="field">
+          <div class="fiel">
             <label for="current_password">Mot de passe actuel</label>
             <input id="current_password" v-model="pwd.current_password" type="password" autocomplete="current-password" required />
             <span class="error">{{ pwdErr('current_password') }}</span>
           </div>
           <div class="row">
             <div class="field">
-              <label for="new_password">Nouveau mot de passe (8 caractères minimum)</label>
+              <label for="new_password">Nouveau mot de passe</label>
               <input id="new_password" v-model="pwd.password" type="password" autocomplete="new-password" required />
+              <div>(8 caractères minimum)</div>
               <span class="error">{{ pwdErr('password') }}</span>
             </div>
             <div class="field">

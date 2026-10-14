@@ -11,11 +11,11 @@ const bareLayout = computed(() => route.matched.some((r) => r.meta.layout === 'a
 
 <template>
   <RouterView v-if="bareLayout" />
-  <template v-else>
+  <div v-else>
     <AppHeader />
     <main>
       <RouterView />
     </main>
     <AppFooter />
-  </template>
+  </div>
 </template>

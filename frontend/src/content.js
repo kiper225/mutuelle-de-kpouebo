@@ -26,7 +26,7 @@ export const site = {
   village: {
     title: 'Un village au cœur de la Côte d\'Ivoire',
     text: 'Kpouèbo est un village du centre de la Côte d\'Ivoire, appartenant au district des Lacs, ayant pour chef-lieu de Toumodi, dans la Région du Bélier. Kpouèbo est composée de 3 quartiers : Alloubo, Yakro et Idjébo.',
-    image: '../public/img/village.jpeg', // carte ou photo aérienne de Kpouèbo
+    image: '../public/img/Carte-de-la-sous-prefecture-de-Kpouebo.png', // carte ou photo aérienne de Kpouèbo
   },
   values: [
     { 
@@ -92,7 +92,7 @@ export const site = {
   // Section « Visages emblématiques de Kpouèbo » (photo : fichier dans public/img, ex. '/img/visage1.jpg', ou '' pour l'initiale)
   faces: {
     title: 'Visages emblématiques de Kpouèbo',
-    intro: '[Phrase d’introduction : ces femmes et ces hommes qui ont marqué l’histoire et la vie du village.]',
+    intro: 'Ces hommes et ces femmes qui ont marqué l’histoire et la vie du village de Kpouèbo.',
     items: [
       { name: 'KOFFI BENOIT AHOSSI', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’il ou elle a apporté à Kpouèbo.]', photo: '../public/img/ahossi.jpeg' },
       { name: 'KOUAKOU TELESFORT SARAKA', role: 'Cadre de Kpouèbo', text: '[Quelques mots sur son parcours et sur ce qu’elle a apporté à Kpouèbo.]', photo: '../public/img/telesfort.jfif' },

@@ -26,7 +26,7 @@ async function submit() {
 </script>
 
 <template>
-  <div>
+  <div style="padding-top: 7%;">
     <div class="page-banner"><div class="container"><h1>Connexion</h1></div></div>
     <section class="section alt">
       <div class="container" style="max-width: 480px">

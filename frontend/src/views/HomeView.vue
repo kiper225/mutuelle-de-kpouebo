@@ -53,7 +53,9 @@ onMounted(async () => {
     <HeroCarousel :slides="slides" />
 
     <section class="section alt">
-      <div class="container"><PresidentCard /></div>
+      <div class="container">
+        <PresidentCard />
+      </div>
     </section>
 
     <section class="section center">
@@ -80,9 +82,9 @@ onMounted(async () => {
         <img v-if="site.village.image" :src="site.village.image" :alt="site.village.title" class="split-img" />
         <div v-else class="split-img ph">[CARTE OU PHOTO AÉRIENNE DE KPOUÈBO]</div>
         <div>
-          <h2 style="color: var(--green)">{{ site.village.title }}</h2>
-          <p>{{ site.village.text }}</p>
-          <RouterLink to="/chantiers?category=realisation" class="btn green">Voir nos réalisations</RouterLink>
+          <h2 style="color: var(--green)" class="text-3xl md:text-4xl font-bold">{{ site.village.title }}</h2>
+          <p>{{ site.village.text }}</p><br />
+          <RouterLink to="/chantiers?category=realisation" class="btn green">Voir l'histoire de Kpouèbo</RouterLink>
         </div>
       </div>
     </section>

@@ -15,6 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HomeContentController;
 use App\Models\SectionItem;
+use App\Http\Controllers\LikeController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -43,6 +44,7 @@ Route::prefix('v1')->group(function () {
             Route::get('publications/{publication}/comments', [CommentController::class, 'index']);
             Route::post('publications/{publication}/comments', [CommentController::class, 'store']);
             Route::delete('comments/{comment}', [CommentController::class, 'destroy']);
+            Route::post('publications/{publication}/like', LikeController::class);
 
             Route::get('cotisations', [CotisationController::class, 'index']);
             Route::post('cotisations', [CotisationController::class, 'store']);
