@@ -48,6 +48,8 @@ class MemberController extends Controller
             'gender' => ['sometimes', 'required', Rule::in(User::GENDERS)],
             'birth_date' => ['sometimes', 'required', 'date', 'before:today', 'after:1900-01-01'],
             'birth_place' => ['sometimes', 'required', 'string', 'max:150'],
+            'father_name' => ['sometimes', 'nullable', 'string', 'max:150'],
+            'mother_name' => ['sometimes', 'nullable', 'string', 'max:150'],
             'children_count' => ['sometimes', 'required', 'integer', 'min:0', 'max:30'],
             'photo' => ['sometimes', 'required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
 

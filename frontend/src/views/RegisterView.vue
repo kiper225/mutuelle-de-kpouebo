@@ -5,7 +5,7 @@ import { MARITAL_STATUS, GENDER } from '../utils'
 import PhotoField from '../components/PhotoField.vue'
 
 const form = reactive({
-  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', children_count: '',
+  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', father_name: '', mother_name: '', children_count: '',
   marital_status: '', profession: '', residence: '', mutuelle_role: 'Membre',
   phone: '', email: '', password: '', password_confirmation: '', accept_terms: false,
 })
@@ -111,6 +111,18 @@ async function submit() {
               <label for="children_count">Nombre d'enfants</label>
               <input id="children_count" v-model="form.children_count" type="number" min="0" max="30" required />
               <span class="error">{{ err('children_count') }}</span>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="father_name">Nom du père</label>
+                <input id="father_name" v-model="form.father_name" type="text" maxlength="150" required />
+                <span class="error">{{ err('father_name') }}</span>
+              </div>
+              <div class="field">
+                <label for="mother_name">Nom de la mère</label>
+                <input id="mother_name" v-model="form.mother_name" type="text" maxlength="150" required />
+                <span class="error">{{ err('mother_name') }}</span>
+              </div>
             </div>
           </div>
 

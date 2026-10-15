@@ -36,6 +36,8 @@ defineProps({ member: { type: Object, required: true } })
         <tr><td class="label">Genre</td><td>{{ GENDER[member.gender] || '' }}</td></tr>
         <tr><td class="label">Date de naissance</td><td>{{ formatDateShort(member.birth_date) }}</td></tr>
         <tr><td class="label">Lieu de naissance</td><td>{{ member.birth_place }}</td></tr>
+        <tr><td class="label">Nom du père</td><td>{{ member.father_name }}</td></tr>
+        <tr><td class="label">Nom de la mère</td><td>{{ member.mother_name }}</td></tr>
         <tr><td class="label">Nombre d'enfants</td><td>{{ member.children_count }}</td></tr>
       </tbody>
     </table>

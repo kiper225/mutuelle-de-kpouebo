@@ -10,7 +10,7 @@ const id = route.params.id
 
 const member = ref(null)
 const form = reactive({
-  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', children_count: '',
+  last_name: '', first_names: '', gender: '', birth_date: '', birth_place: '', father_name: '', mother_name: '', children_count: '',
   marital_status: '', profession: '', residence: '', mutuelle_role: '', phone: '', email: '',
 })
 const errors = ref({})
@@ -31,6 +31,8 @@ function fill(m) {
     gender: m.gender || '',
     birth_date: m.birth_date ? String(m.birth_date).slice(0, 10) : '',
     birth_place: m.birth_place || '',
+    father_name: m.father_name || '',
+    mother_name: m.mother_name || '',
     children_count: m.children_count ?? '',
     marital_status: m.marital_status || '',
     profession: m.profession || '',
@@ -89,6 +91,35 @@ async function savePhoto() {
   }
 }
 
+const tempPassword = ref('')
+const resetting = ref(false)
+const copied = ref(false)
+
+async function resetPassword() {
+  if (!confirm(`Générer un mot de passe provisoire pour ${member.value.name} ? L'ancien ne fonctionnera plus et le membre sera déconnecté.`)) return
+  resetting.value = true
+  error.value = ''
+  success.value = ''
+  copied.value = false
+  try {
+    const res = await api.post(`/admin/members/${id}/reset-password`)
+    tempPassword.value = res.temporary_password
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    resetting.value = false
+  }
+}
+
+async function copyPassword() {
+  try {
+    await navigator.clipboard.writeText(tempPassword.value)
+    copied.value = true
+  } catch {
+    /* copie manuelle : le mot de passe est sélectionnable à l'écran */
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -138,6 +169,24 @@ onMounted(load)
             {{ photoSaving ? 'Envoi…' : 'Enregistrer la photo' }}
           </button>
         </div>
+        
+        <div class="card" style="margin-bottom: 24px">
+          <h2 style="color: var(--green)">Accès au compte</h2>
+          <p class="muted">
+            Si le membre a oublié son mot de passe et n'a pas d'adresse email, générez un mot de passe provisoire et
+            communiquez-le lui.
+          </p>
+          <button class="btn outline-green small" type="button" :disabled="resetting" @click="resetPassword">
+            Réinitialiser le mot de passe
+          </button>
+          <div v-if="tempPassword" class="alert ok" style="margin-top: 12px">
+            Mot de passe provisoire : <b class="temp-password">{{ tempPassword }}</b>
+            <button class="btn green small" type="button" style="margin-left: 8px" @click="copyPassword">{{ copied ? 'Copié' : 'Copier' }}</button>
+            <p style="margin: 8px 0 0">
+              Il n'est affiché qu'une seule fois. Invitez le membre à le changer dans « Mon profil ».
+            </p>
+          </div>
+        </div>
 
         <form class="card form" @submit.prevent="save">
           <h2 style="color: var(--green)">Modifier le dossier</h2>
@@ -179,6 +228,18 @@ onMounted(load)
               <input id="children_count" v-model="form.children_count" type="number" min="0" max="30" />
               <span class="error">{{ err('children_count') }}</span>
             </div>
+            <div class="row">
+              <div class="field">
+                <label for="father_name">Nom du père</label>
+                <input id="father_name" v-model="form.father_name" type="text" maxlength="150" />
+                <span class="error">{{ err('father_name') }}</span>
+              </div>
+              <div class="field">
+                <label for="mother_name">Nom de la mère</label>
+                <input id="mother_name" v-model="form.mother_name" type="text" maxlength="150" />
+                <span class="error">{{ err('mother_name') }}</span>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div class="field">
@@ -187,20 +248,24 @@ onMounted(load)
                 <option value="">Non précisé</option>
                 <option v-for="(label, key) in MARITAL_STATUS" :key="key" :value="key">{{ label }}</option>
               </select>
+              <span class="error">{{ err('marital_status') }}</span>
             </div>
             <div class="field">
               <label for="profession">Profession</label>
               <input id="profession" v-model="form.profession" type="text" />
+              <span class="error">{{ err('profession') }}</span>
             </div>
           </div>
           <div class="row">
             <div class="field">
               <label for="residence">Lieu de résidence</label>
               <input id="residence" v-model="form.residence" type="text" />
+              <span class="error">{{ err('residence') }}</span>
             </div>
             <div class="field">
               <label for="mutuelle_role">Poste au sein de la mutuelle</label>
               <input id="mutuelle_role" v-model="form.mutuelle_role" type="text" />
+              <span class="error">{{ err('mutuelle_role') }}</span>
             </div>
           </div>
           <div class="row">

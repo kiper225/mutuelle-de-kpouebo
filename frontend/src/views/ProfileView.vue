@@ -89,6 +89,8 @@ async function changePassword() {
                 <tr><th>Prénoms</th><td>{{ auth.user.first_names }}</td></tr>
                 <tr><th>Sexe</th><td>{{ GENDER[auth.user.gender] || '—' }}</td></tr>
                 <tr><th>Naissance</th><td>{{ formatDateShort(auth.user.birth_date) }} à {{ auth.user.birth_place }}</td></tr>
+                <tr><th>Nom du père</th><td>{{ auth.user.father_name || '—' }}</td></tr>
+                <tr><th>Nom de la mère</th><td>{{ auth.user.mother_name || '—' }}</td></tr>
                 <tr><th>Poste</th><td>{{ auth.user.mutuelle_role || '—' }}</td></tr>
                 <tr><th>N° de membre</th><td>{{ auth.user.member_number || '—' }}</td></tr>
                 <tr><th>Téléphone</th><td>{{ auth.user.phone }}</td></tr>
@@ -140,7 +142,7 @@ async function changePassword() {
               <span class="error">{{ err('profession') }}</span>
             </div>
           </div>
-          <div class="fiel">
+          <div class="">
             <label for="residence">Lieu de résidence</label>
             <input id="residence" v-model="form.residence" type="text" />
             <span class="error">{{ err('residence') }}</span>

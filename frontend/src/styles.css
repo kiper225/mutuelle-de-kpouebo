@@ -53,7 +53,7 @@ button.linklike { background: none; border: 0; cursor: pointer; font-family: inh
 .hero .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .12em; color: #f7b25e; }
 .hero h1 { font-size: 46px; max-width: 720px; margin: 12px 0 20px; }
 .hero p { max-width: 560px; margin: 0 0 28px; }
-.page-banner { background: var(--green-dark); color: #fff; padding: 36px 0; }
+.page-banner { background: var(--green-dark); color: #fff; padding: 36px 0; margin-top: 7%; }
 .page-banner h1 { margin: 0; font-size: 32px; }
 
 /* Cartes et grilles */
@@ -565,3 +565,18 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 .fb-post.detail .fb-body { font-size: 16px; }
 .fb-more-comments { background: none; border: 0; padding: 0; margin: 0 0 10px; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; }
 .fb-more-comments:hover { text-decoration: underline; }
+
+/* Détail d'une publication : commentaires dans la colonne de droite */
+.fb-panel { margin-top: 16px; padding: 16px; }
+.fb-panel h3 { font-size: 16px; margin: 0 0 12px; color: var(--green-dark); }
+.fb-post.detail > .fb-media:first-child { border-radius: 10px 10px 0 0; }
+
+/* Sur tablette et téléphone, la colonne de droite (don + commentaires) reste visible sous la publication */
+@media (max-width: 1150px) {
+  .fb-page-detail .fb-layout { grid-template-columns: minmax(0, 680px); }
+  .fb-page-detail .fb-left { display: none; }
+  .fb-page-detail .fb-right { display: block; position: static; max-height: none; overflow: visible; }
+}
+
+.forgot-link { align-self: flex-end; font-size: 14px; font-weight: 600; }
+.temp-password { font-family: ui-monospace, Consolas, monospace; font-size: 18px; letter-spacing: .05em; user-select: all; }

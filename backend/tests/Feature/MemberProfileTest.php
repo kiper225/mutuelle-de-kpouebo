@@ -27,6 +27,7 @@ class MemberProfileTest extends TestCase
             'last_name' => 'Kouassi', 'first_names' => 'Yao Jean',
             'gender' => 'M',
             'birth_date' => '1985-04-12', 'birth_place' => 'Kpouèbo', 'children_count' => 3,
+            'father_name' => 'Kouassi Koffi', 'mother_name' => 'Yao Akissi',
             'photo' => UploadedFile::fake()->image('photo.jpg', 300, 400),
             'marital_status' => 'marie', 'profession' => 'Enseignant', 'residence' => 'Abidjan',
             'phone' => '0700000000', 'password' => 'motdepasse1', 'password_confirmation' => 'motdepasse1',
@@ -43,6 +44,8 @@ class MemberProfileTest extends TestCase
 
         $user = User::where('phone', '0700000000')->firstOrFail();
         $this->assertSame('Kpouèbo', $user->birth_place);
+        $this->assertSame('Kouassi Koffi', $user->father_name);
+        $this->assertSame('Yao Akissi', $user->mother_name);
         $this->assertSame(3, $user->children_count);
         $this->assertSame('Membre', $user->mutuelle_role);
         $this->assertSame('pending', $user->status);
@@ -53,11 +56,11 @@ class MemberProfileTest extends TestCase
     public function test_registration_requires_birth_place_children_and_photo(): void
     {
         $data = $this->registrationData();
-        unset($data['birth_place'], $data['children_count'], $data['photo'], $data['gender']);
+        unset($data['birth_place'], $data['children_count'], $data['photo'], $data['gender'], $data['father_name'], $data['mother_name']);
 
         $this->postJson('/api/v1/register', $data)
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['birth_place', 'children_count', 'photo', 'gender']);
+            ->assertJsonValidationErrors(['birth_place', 'children_count', 'photo', 'gender', 'father_name', 'mother_name']);
     }
 
     public function test_approval_assigns_a_member_number_once(): void
@@ -109,5 +112,19 @@ class MemberProfileTest extends TestCase
         Sanctum::actingAs($this->user('admin'));
 
         $this->putJson("/api/v1/admin/members/{$member->id}", ['gender' => 'X'])->assertUnprocessable();
+    }
+
+    public function test_admin_can_fill_the_filiation_of_an_existing_member(): void
+    {
+        $member = $this->user();
+        Sanctum::actingAs($this->user('admin'));
+
+        $this->putJson("/api/v1/admin/members/{$member->id}", [
+            'father_name' => 'Kouassi Koffi', 'mother_name' => 'Yao Akissi',
+        ])->assertOk();
+
+        $member->refresh();
+        $this->assertSame('Kouassi Koffi', $member->father_name);
+        $this->assertSame('Yao Akissi', $member->mother_name);
     }
 }

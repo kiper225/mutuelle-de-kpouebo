@@ -15,6 +15,7 @@ const routes = [
   { path: '/profil', component: () => import('./views/ProfileView.vue'), meta: { requiresAuth: true } },
   { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true, layout: 'app' } },
   { path: '/imprimer/:type/:id', component: () => import('./views/PrintView.vue'), meta: { requiresAdmin: true } },
+  { path: '/actualites/:slug', component: () => import('./views/NewsDetailView.vue'), meta: { noFooter: true } },
   {
     path: '/admin',
     component: () => import('./layouts/AdminLayout.vue'),
@@ -77,6 +78,8 @@ const routes = [
     ],
   },
   { path: '/recherche', component: () => import('./views/SearchView.vue') },
+  { path: '/mot-de-passe-oublie', component: () => import('./views/ForgotPasswordView.vue'), meta: { guestOnly: true } },
+  { path: '/reinitialiser-mot-de-passe', component: () => import('./views/ResetPasswordView.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

@@ -81,7 +81,7 @@ async function toggleComments() {
   if (!commentsLoaded.value) await loadComments()
 }
 
-// Page de détail : le bouton « Commenter » place le curseur dans le champ ; dans le fil, il ouvre les commentaires.
+// Page de détail : « Commenter » place le curseur dans le champ ; dans le fil, il ouvre les commentaires.
 function onCommentClick() {
   if (props.detail) commentInput.value?.focus()
   else toggleComments()
@@ -169,6 +169,7 @@ onMounted(() => {
       </p>
     </div>
 
+    <!-- L'image est sous le texte -->
     <template v-if="pub.cover_url">
       <a v-if="detail" :href="pub.cover_url" target="_blank" rel="noopener" class="fb-media" aria-label="Ouvrir l'image en grand">
         <img :src="pub.cover_url" :alt="pub.title" />
@@ -219,7 +220,7 @@ onMounted(() => {
       <RouterLink v-if="!isLoggedIn" :to="{ path: '/connexion', query: { redirect: $route.fullPath } }">Se connecter</RouterLink>
     </p>
 
-    <!-- Commentaires -->
+    <!-- Commentaires en bas de la carte -->
     <div v-if="showComments && isLoggedIn" class="fb-comments">
       <div v-for="c in comments" :key="c.id" class="fb-comment" :style="c.hidden_at ? 'opacity: .55' : ''">
         <img v-if="c.user?.photo_url" :src="c.user.photo_url" alt="" class="fb-avatar-sm" />

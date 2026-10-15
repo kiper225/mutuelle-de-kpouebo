@@ -16,6 +16,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HomeContentController;
 use App\Models\SectionItem;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PasswordResetController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -27,6 +28,8 @@ Route::prefix('v1')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::post('donations', [DonationController::class, 'store'])->middleware('throttle:10,1');
     Route::get('home-content', HomeContentController::class);
+    Route::post('forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:5,1');
+    Route::post('reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1');
 
     Route::post('webhooks/payments', PaymentWebhookController::class);   // générique (utilisé par les tests)
     Route::post('webhooks/paystack', PaystackWebhookController::class);  // Paystack, authentifié par signature
@@ -69,6 +72,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('members/{user}', [Admin\MemberController::class, 'show']);
                 Route::put('members/{user}', [Admin\MemberController::class, 'update']);
                 Route::post('members/{user}/photo', [Admin\MemberController::class, 'updatePhoto']);
+                Route::post('members/{user}/reset-password', [Admin\MemberController::class, 'resetPassword']);
 
                 Route::apiResource('publications', Admin\PublicationController::class);
 

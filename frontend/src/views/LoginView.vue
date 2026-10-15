@@ -26,7 +26,7 @@ async function submit() {
 </script>
 
 <template>
-  <div style="padding-top: 7%;">
+  <div>
     <div class="page-banner"><div class="container"><h1>Connexion</h1></div></div>
     <section class="section alt">
       <div class="container" style="max-width: 480px">
@@ -40,6 +40,7 @@ async function submit() {
             <label for="password">Mot de passe</label>
             <input id="password" v-model="password" type="password" autocomplete="current-password" required />
           </div>
+          <RouterLink to="/mot-de-passe-oublie" class="forgot-link">Mot de passe oublié ?</RouterLink>
           <button class="btn green" type="submit" :disabled="sending">{{ sending ? 'Connexion…' : 'Se connecter' }}</button>
           <p class="muted">Pas encore membre ? <RouterLink to="/inscription">Faire une demande d'adhésion</RouterLink></p>
         </form>

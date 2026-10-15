@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\MemberResetPassword;
 
 class User extends Authenticatable
 {
@@ -27,7 +28,7 @@ class User extends Authenticatable
     // `role`, `status`, `member_number` et `joined_at` ne sont volontairement PAS assignables en masse.
     protected $fillable = [
         'name', 'last_name', 'first_names', 'gender', 'email', 'phone',
-        'birth_date', 'birth_place', 'children_count', 'marital_status',
+        'birth_date', 'birth_place', 'father_name', 'mother_name', 'children_count', 'marital_status',
         'profession', 'residence', 'mutuelle_role', 'photo_path', 'password',
     ];
 
@@ -74,5 +75,10 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new MemberResetPassword($token));
     }
 }

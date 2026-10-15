@@ -24,6 +24,8 @@ class AuthController extends Controller
             'gender' => ['required', Rule::in(User::GENDERS)],
             'birth_date' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'birth_place' => ['required', 'string', 'max:150'],
+            'father_name' => ['required', 'string', 'max:150'],
+            'mother_name' => ['required', 'string', 'max:150'],
             'children_count' => ['required', 'integer', 'min:0', 'max:30'],
             'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             // Informations personnelles
