@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contribution;
 use App\Models\Donation;
 use App\Services\PaymentSettler;
 use App\Services\PaystackClient;
@@ -9,7 +10,7 @@ use App\Services\PaystackClient;
 /**
  * État d'un paiement, utilisé par la page de retour du site.
  * Si le paiement est encore « en attente », on interroge Paystack (utile si la notification n'est pas encore arrivée,
- * ou en local où Paystack ne peut pas joindre le serveur). La référence aléatoire sert de secret : aucune donnée personnelle n'est renvoyée.
+ * ou en local où Paystack ne peut pas joindre le serveur). Aucune donnée personnelle n'est renvoyée.
  */
 class PaymentStatusController extends Controller
 {
@@ -35,7 +36,11 @@ class PaymentStatusController extends Controller
         }
 
         return [
-            'type' => $record instanceof Donation ? 'don' : 'cotisation',
+            'type' => match (true) {
+                $record instanceof Donation => 'don',
+                $record instanceof Contribution => 'collecte',
+                default => 'cotisation',
+            },
             'reference' => $record->reference,
             'amount' => $record->amount,
             'status' => $record->status,

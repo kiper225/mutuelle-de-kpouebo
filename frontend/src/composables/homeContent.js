@@ -13,8 +13,9 @@ function refresh() {
       .then((res) => {
         state.data = res
       })
-      .catch(() => {
-        /* serveur injoignable : on garde les valeurs de content.js */
+      .catch((e) => {
+        // serveur injoignable : on garde les valeurs de content.js, mais on le signale dans la console (F12)
+        console.warn('Contenu de l’accueil indisponible :', e.message)
       })
       .finally(() => {
         state.loaded = true

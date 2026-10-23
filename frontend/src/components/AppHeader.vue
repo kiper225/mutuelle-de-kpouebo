@@ -8,6 +8,7 @@ import SearchBar from './SearchBar.vue'
 const route = useRoute()
 const router = useRouter()
 const open = ref(null)
+const mobileOpen = ref(false)
 
 const initial = computed(() => (auth.user?.first_names || auth.user?.name || '?').charAt(0).toUpperCase())
 
@@ -26,6 +27,7 @@ const menus = [
     items: [
       { label: 'Projets en cours', to: '/chantiers?category=projet_en_cours' },
       { label: 'Réalisations', to: '/chantiers?category=realisation' },
+      { label: 'Levées de fonds', to: '/collectes' },
     ],
   },
   {
@@ -54,6 +56,7 @@ onBeforeUnmount(() => {
 watch(() => route.fullPath, () => {
   close()
   refreshUnread()
+  mobileOpen.value = false
 })
 
 async function onLogout() {
@@ -73,56 +76,62 @@ async function onLogout() {
     </div>
     <header class="header">
       <div class="container">
-      <RouterLink to="/" class="brand">
-        <img src="/logo.jpg" alt="Logo de la Mutuelle de Développement de Kpouèbo" />
-      </RouterLink>
-      <nav class="nav" aria-label="Navigation principale">
-        <RouterLink to="/">Accueil</RouterLink>
-
-        <div v-for="m in menus" :key="m.key" class="dropdown">
-          <button type="button" class="linklike" :aria-expanded="open === m.key" @click="toggle(m.key)">{{ m.label }} ▾</button>
-          <ul v-show="open === m.key" class="dropdown-menu">
-            <li v-for="i in m.items" :key="i.to"><RouterLink :to="i.to">{{ i.label }}</RouterLink></li>
-          </ul>
-        </div>
-
-        <SearchBar />
-
-        <RouterLink v-if="isLoggedIn && isAdmin" to="/admin" class="btn orange small">Administration</RouterLink>
-        <RouterLink v-else-if="isLoggedIn" to="/espace" class="btn orange small">Mon espace</RouterLink>
-        <RouterLink v-else to="/espace" class="btn orange small">Espace membres</RouterLink>
-        <RouterLink to="/don" class="btn green small">Faire un don</RouterLink>
-
-        <RouterLink
-          v-if="isLoggedIn"
-          to="/messagerie"
-          class="icon-link"
-          title="Messagerie"
-          :aria-label="auth.unread ? `Messagerie, ${auth.unread} message(s) non lu(s)` : 'Messagerie'"
-        >
-          <svg viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="14" rx="2" />
-            <path d="M3 7l9 6 9-6" />
-          </svg>
-          <span v-if="auth.unread" class="badge-count" aria-hidden="true">{{ auth.unread > 99 ? '99+' : auth.unread }}</span>
+        <RouterLink to="/" class="brand">
+          <img src="/logo.jpg" alt="Logo de la Mutuelle de Développement de Kpouèbo" />
         </RouterLink>
+        <button type="button" class="menu-toggle" :aria-expanded="mobileOpen" aria-controls="main-nav" aria-label="Menu" @click="mobileOpen = !mobileOpen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path v-if="!mobileOpen" d="M4 6h16M4 12h16M4 18h16" />
+            <path v-else d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+        <nav id="main-nav" class="nav" :class="{ open: mobileOpen }" aria-label="Navigation principale">
+          <RouterLink to="/">Accueil</RouterLink>
 
-        <div v-if="isLoggedIn" class="dropdown">
-          <button type="button" class="avatar-btn" :aria-expanded="open === 'account'" aria-label="Mon compte" @click="toggle('account')">
-            <img v-if="auth.user.photo_url" :src="auth.user.photo_url" alt="" class="avatar" />
-            <span v-else class="avatar">{{ initial }}</span>
-          </button>
-          <ul v-show="open === 'account'" class="dropdown-menu right">
-            <li class="menu-head"><b>{{ auth.user.name }}</b></li>
-            <li>
-              <RouterLink v-if="isAdmin" to="/admin">Administration</RouterLink>
-              <RouterLink v-else to="/espace">Mon espace</RouterLink>
-            </li>
-            <li><RouterLink to="/profil">Mon profil</RouterLink></li>
-            <li><button type="button" class="menu-btn" @click="onLogout">Déconnexion</button></li>
-          </ul>
-        </div>
-      </nav>
+          <div v-for="m in menus" :key="m.key" class="dropdown">
+            <button type="button" class="linklike" :aria-expanded="open === m.key" @click="toggle(m.key)">{{ m.label }} ▾</button>
+            <ul v-show="open === m.key" class="dropdown-menu">
+              <li v-for="i in m.items" :key="i.to"><RouterLink :to="i.to">{{ i.label }}</RouterLink></li>
+            </ul>
+          </div>
+
+          <SearchBar />
+
+          <RouterLink v-if="isLoggedIn && isAdmin" to="/admin" class="btn orange small">Administration</RouterLink>
+          <RouterLink v-else-if="isLoggedIn" to="/espace" class="btn orange small">Mon espace</RouterLink>
+          <RouterLink v-else to="/espace" class="btn orange small">Espace membres</RouterLink>
+          <RouterLink to="/don" class="btn green small">Faire un don</RouterLink>
+
+          <RouterLink
+            v-if="isLoggedIn"
+            to="/messagerie"
+            class="icon-link"
+            title="Messagerie"
+            :aria-label="auth.unread ? `Messagerie, ${auth.unread} message(s) non lu(s)` : 'Messagerie'"
+          >
+            <svg viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 7l9 6 9-6" />
+            </svg>
+            <span v-if="auth.unread" class="badge-count" aria-hidden="true">{{ auth.unread > 99 ? '99+' : auth.unread }}</span>
+          </RouterLink>
+
+          <div v-if="isLoggedIn" class="dropdown">
+            <button type="button" class="avatar-btn" :aria-expanded="open === 'account'" aria-label="Mon compte" @click="toggle('account')">
+              <img v-if="auth.user.photo_url" :src="auth.user.photo_url" alt="" class="avatar" />
+              <span v-else class="avatar">{{ initial }}</span>
+            </button>
+            <ul v-show="open === 'account'" class="dropdown-menu right">
+              <li class="menu-head"><b>{{ auth.user.name }}</b></li>
+              <li>
+                <RouterLink v-if="isAdmin" to="/admin">Administration</RouterLink>
+                <RouterLink v-else to="/espace">Mon espace</RouterLink>
+              </li>
+              <li><RouterLink to="/profil">Mon profil</RouterLink></li>
+              <li><button type="button" class="menu-btn" @click="onLogout">Déconnexion</button></li>
+            </ul>
+          </div>
+        </nav>
       </div>
     </header>
   </div>

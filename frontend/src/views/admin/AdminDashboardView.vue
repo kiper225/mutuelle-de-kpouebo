@@ -1,12 +1,20 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { api } from '../../api'
-import { formatMoney, formatDateShort } from '../../utils'
+import { formatMoney, formatDateShort, currentPeriod } from '../../utils'
 import BarChart from '../../components/BarChart.vue'
+
+const SOURCES = [
+  { key: 'cotisations', label: 'Cotisations' },
+  { key: 'donations', label: 'Dons' },
+  { key: 'fundraisers', label: 'Levées de fonds' },
+]
 
 const stats = ref(null)
 const monthly = ref(null)
 const pending = ref([])
+const income = ref(null)
+const period = ref(currentPeriod())
 const error = ref('')
 
 const nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
@@ -28,6 +36,14 @@ const cotDelta = computed(() => delta(monthly.value?.cotisations))
 const donDelta = computed(() => delta(monthly.value?.donations))
 const newMembers = computed(() => last(monthly.value?.new_members))
 
+async function loadIncome() {
+  try {
+    income.value = await api.get('/admin/stats/income', { period: period.value || currentPeriod() })
+  } catch (e) {
+    error.value = e.message
+  }
+}
+
 async function load() {
   error.value = ''
   try {
@@ -42,6 +58,7 @@ async function load() {
   } catch (e) {
     error.value = e.message
   }
+  await loadIncome()
 }
 
 async function act(member, action) {
@@ -97,6 +114,56 @@ onMounted(load)
             <div class="kpi-delta"><RouterLink to="/admin/publications">Gérer les publications</RouterLink></div>
             <div class="kpi-note">Actualités, projets et communiqués</div>
           </div>
+        </div>
+
+        <!-- Entrées d'argent : en ligne et en espèces -->
+        <div class="card" style="margin-bottom: 16px">
+          <div class="income-head">
+            <h2 style="color: var(--green); margin: 0">Entrées d'argent</h2>
+            <div class="field income-period">
+              <label for="income-period">Mois</label>
+              <input id="income-period" v-model="period" type="month" @change="loadIncome" />
+            </div>
+          </div>
+
+          <template v-if="income">
+            <div class="income-total">
+              <span class="kpi-value" style="margin: 0">{{ formatMoney(income.month.total.total) }}</span>
+              <span class="muted">
+                encaissés : {{ formatMoney(income.month.total.online) }} en ligne · {{ formatMoney(income.month.total.cash) }} en espèces
+              </span>
+            </div>
+
+            <div class="table-wrap">
+              <table class="income-table">
+                <thead>
+                  <tr><th>Source</th><th>En ligne</th><th>Espèces</th><th>Total du mois</th><th>Depuis le début</th></tr>
+                </thead>
+                <tbody>
+                  <tr v-for="s in SOURCES" :key="s.key">
+                    <td>{{ s.label }}</td>
+                    <td>{{ formatMoney(income.month[s.key].online) }}</td>
+                    <td>{{ formatMoney(income.month[s.key].cash) }}</td>
+                    <td>{{ formatMoney(income.month[s.key].total) }}</td>
+                    <td>{{ formatMoney(income.all_time[s.key].total) }}</td>
+                  </tr>
+                  <tr class="total">
+                    <td>Total</td>
+                    <td>{{ formatMoney(income.month.total.online) }}</td>
+                    <td>{{ formatMoney(income.month.total.cash) }}</td>
+                    <td>{{ formatMoney(income.month.total.total) }}</td>
+                    <td>{{ formatMoney(income.all_time.total.total) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="muted" style="margin: 12px 0 0">
+              « En ligne » : paiements faits sur le site. « Espèces » : paiements enregistrés à la main par le bureau.
+              Les cotisations sont celles dues pour le mois choisi ; les dons et les levées de fonds sont les sommes reçues pendant ce mois.
+              Seuls les paiements confirmés sont comptés.
+            </p>
+          </template>
+          <p v-else class="muted">Chargement…</p>
         </div>
 
         <div class="chart-grid">

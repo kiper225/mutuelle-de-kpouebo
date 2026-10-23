@@ -142,7 +142,7 @@ watch(
             <span class="error">{{ err('subtitle') }}</span>
           </div>
         </div>
-        <div class="field">
+        <div>
           <label for="text">{{ cfg.textLabel }} (600 caractères maximum)</label>
           <textarea id="text" v-model="form.text" rows="3" maxlength="600"></textarea>
           <span class="error">{{ err('text') }}</span>

@@ -121,7 +121,7 @@ onMounted(load)
             <input id="role" v-model="form.role" type="text" maxlength="150" />
           </div>
         </div>
-        <div class="field">
+        <div>
           <label for="text">Présentation (600 caractères maximum)</label>
           <textarea id="text" v-model="form.text" rows="4" maxlength="600"></textarea>
           <span class="error">{{ err('text') }}</span>

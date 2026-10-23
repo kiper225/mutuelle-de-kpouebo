@@ -82,7 +82,7 @@ onBeforeUnmount(() => setPreview(null))
 </script>
 
 <template>
-  <div class="field">
+  <div class="">
     <label :for="id">{{ label }}</label>
     <div class="photo-field">
       <img

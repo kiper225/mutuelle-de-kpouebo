@@ -3,7 +3,7 @@ defineProps({ members: { type: Array, required: true } })
 </script>
 
 <template>
-  <div class="grid grid-wide">
+  <div class="grid bureau-grid">
     <div v-for="(m, i) in members" :key="i" class="bureau-card">
       <img v-if="m.photo" :src="m.photo" :alt="`Photo de ${m.name}`" class="bphoto" />
       <div v-else class="bphoto ph">[PHOTO]</div>

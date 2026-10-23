@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Cotisation;
 use App\Models\Donation;
+use App\Models\Contribution;
 
 class PaystackGateway implements PaymentGateway
 {
@@ -25,6 +26,15 @@ class PaystackGateway implements PaymentGateway
         return $this->start($donation->reference, $donation->amount, $donation->donor_email ?: $donation->user?->email, [
             'type' => 'don',
             'donor' => $donation->donor_name,
+        ]);
+    }
+
+    public function initiateContribution(Contribution $contribution): array
+    {
+        return $this->start($contribution->reference, $contribution->amount, $contribution->user?->email, [
+            'type' => 'collecte',
+            'fundraiser_id' => $contribution->fundraiser_id,
+            'user_id' => $contribution->user_id,
         ]);
     }
 

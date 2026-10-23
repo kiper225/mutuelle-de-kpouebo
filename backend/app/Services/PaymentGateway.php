@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Cotisation;
 use App\Models\Donation;
+use App\Models\Contribution;
 
 interface PaymentGateway
 {
@@ -12,4 +13,6 @@ interface PaymentGateway
 
     /** Démarre le paiement d'un don. Retourne au minimum ['payment_url' => ?string]. */
     public function initiateDonation(Donation $donation): array;
+
+    public function initiateContribution(Contribution $contribution): array;
 }

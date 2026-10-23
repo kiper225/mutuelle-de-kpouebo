@@ -50,7 +50,13 @@ const routes = [
         path: 'donations',
         component: () => import('./views/admin/AdminDonationsView.vue'),
         meta: { title: 'Dons', subtitle: 'Dons reçus en ligne et hors ligne.' },
-      },{
+      },
+      {
+        path: 'messagerie',
+        component: () => import('./views/admin/AdminMessagesView.vue'),
+        meta: { title: 'Messagerie', subtitle: 'Envoyez un message groupé aux membres et suivez leurs réponses.' },
+      },
+      {
         path: 'carrousel',
         component: () => import('./views/admin/AdminHeroSlidesView.vue'),
         meta: { title: 'Carrousel d’accueil', subtitle: 'Diapositives affichées en haut de la page d’accueil.' },
@@ -75,11 +81,18 @@ const routes = [
         component: () => import('./views/admin/AdminSectionView.vue'),
         meta: { section: 'valeurs', title: 'Valeurs', subtitle: 'Les valeurs qui guident l’action de la mutuelle.' },
       },
+      {
+        path: 'collectes',
+        component: () => import('./views/admin/AdminFundraisersView.vue'),
+        meta: { title: 'Levées de fonds', subtitle: 'Collectes exceptionnelles pour les chantiers et les activités de la mutuelle.' },
+      },
     ],
   },
   { path: '/recherche', component: () => import('./views/SearchView.vue') },
   { path: '/mot-de-passe-oublie', component: () => import('./views/ForgotPasswordView.vue'), meta: { guestOnly: true } },
   { path: '/reinitialiser-mot-de-passe', component: () => import('./views/ResetPasswordView.vue') },
+  { path: '/collectes', component: () => import('./views/FundraisersView.vue') },
+  { path: '/collectes/:id', component: () => import('./views/FundraiserDetailView.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

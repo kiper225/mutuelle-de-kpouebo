@@ -10,6 +10,7 @@ import BureauGrid from '../components/BureauGrid.vue'
 import HeroCarousel from '../components/HeroCarousel.vue'
 import NewsCarousel from '../components/NewsCarousel.vue'
 import FacesCarousel from '../components/FacesCarousel.vue'
+import { useHomeContent } from '../composables/homeContent'
 
 const latest = ref([])
 const loadError = ref('')
@@ -17,6 +18,7 @@ const loadError = ref('')
 // Sans diapositive enregistrée, on garde celles de content.js.
 const slides = ref(site.slides || [])
 const faces = ref([])
+const { values, bureau } = useHomeContent()
 
 const mapSlide = (s) => ({
   eyebrow: s.eyebrow || '',
@@ -99,7 +101,7 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="section">
+    <section v-if="values.length" class="section">
       <div class="container">
         <h2 class="center text-3xl md:text-4xl font-bold" style="color: var(--green)">Les valeurs qui guident notre action</h2>
         <p class="center narrow" style="margin-bottom: 32px">
@@ -110,15 +112,16 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="section alt">
+    <section v-if="bureau.length" class="section alt">
       <div class="container">
         <h2 class="center text-3xl md:text-4xl font-bold" style="color: var(--green)">Le bureau de la mutuelle</h2>
         <p class="center narrow" style="margin-bottom: 32px">
           La mutuelle est composée d’un bureau élu par les membres. Il est chargé de la gestion et de l’administration, ainsi que de la mise en œuvre des projets et des actions décidés par l’assemblée générale.
         </p>
-        <BureauGrid />
+        <BureauGrid :members="bureau" />
       </div>
     </section>
+
     <section v-if="faces.length" class="section">
       <div class="container">
         <h2 class="center text-3xl md:text-4xl font-bold" style="color: var(--green)">{{ site.faces?.title || 'Visages emblématiques de Kpouèbo' }}</h2>

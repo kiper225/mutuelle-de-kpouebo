@@ -7,7 +7,7 @@ const track = ref(null)
 const canPrev = ref(false)
 const canNext = ref(false)
 const paused = ref(false)
-
+ 
 let timer = null
 let observer = null
 

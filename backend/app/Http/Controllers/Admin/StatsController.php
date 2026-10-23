@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contribution;
 use App\Models\Cotisation;
 use App\Models\Donation;
 use App\Models\Publication;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class StatsController extends Controller
 {
@@ -61,5 +65,64 @@ class StatsController extends Controller
             'new_members' => $months->map(fn (string $m) => (int) ($newMembers[$m] ?? 0))->values(),
             'currency' => config('mutuelle.currency'),
         ];
+    }
+
+    /**
+     * Entrées d'argent d'un mois (et depuis le début), par source et par canal :
+     * « online » = payé sur le site ; « cash » = enregistré à la main par le bureau.
+     * Cotisations : celles dues pour le mois. Dons et levées de fonds : sommes reçues pendant le mois.
+     */
+    public function income(Request $request)
+    {
+        $period = $request->validate(['period' => ['nullable', 'date_format:Y-m']])['period'] ?? now()->format('Y-m');
+
+        $start = Carbon::createFromFormat('Y-m', $period)->startOfMonth();
+        $end = $start->copy()->endOfMonth();
+
+        $cotisations = Cotisation::where('status', Cotisation::STATUS_PAID);
+        $donations = Donation::where('status', Donation::STATUS_PAID);
+        $contributions = Contribution::where('status', Contribution::STATUS_PAID);
+
+        $month = $this->withTotal([
+            'cotisations' => $this->split((clone $cotisations)->where('period', $period)),
+            'donations' => $this->split((clone $donations)->whereBetween('paid_at', [$start, $end])),
+            'fundraisers' => $this->split((clone $contributions)->whereBetween('paid_at', [$start, $end])),
+        ]);
+
+        $allTime = $this->withTotal([
+            'cotisations' => $this->split($cotisations),
+            'donations' => $this->split($donations),
+            'fundraisers' => $this->split($contributions),
+        ]);
+
+        return [
+            'period' => $period,
+            'month' => $month,
+            'all_time' => $allTime,
+            'currency' => config('mutuelle.currency'),
+        ];
+    }
+
+    /** @return array{online: int, cash: int, total: int} */
+    private function split(Builder $query): array
+    {
+        $row = $query->selectRaw(
+            'COALESCE(SUM(CASE WHEN recorded_by IS NULL THEN amount ELSE 0 END), 0) AS online, '
+            .'COALESCE(SUM(CASE WHEN recorded_by IS NOT NULL THEN amount ELSE 0 END), 0) AS cash'
+        )->first();
+
+        $online = (int) $row->online;
+        $cash = (int) $row->cash;
+
+        return ['online' => $online, 'cash' => $cash, 'total' => $online + $cash];
+    }
+
+    private function withTotal(array $sources): array
+    {
+        $sum = fn (string $key) => array_sum(array_column($sources, $key));
+
+        $sources['total'] = ['online' => $sum('online'), 'cash' => $sum('cash'), 'total' => $sum('total')];
+
+        return $sources;
     }
 }

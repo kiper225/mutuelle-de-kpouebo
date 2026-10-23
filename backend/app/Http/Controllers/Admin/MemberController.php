@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class MemberController extends Controller
 {
@@ -125,4 +127,23 @@ class MemberController extends Controller
     {
         abort_if($user->isAdmin(), 422, 'Action impossible sur un administrateur.');
     }
+
+   /** Génère un mot de passe provisoire (affiché une seule fois) pour un membre sans email. */
+    public function resetPassword(User $user)
+    {
+        $this->ensureMember($user);
+
+        // Sans caractères ambigus (0/O, 1/l/I) pour pouvoir le dicter au téléphone.
+        $alphabet = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        $temporary = '';
+        for ($i = 0; $i < 10; $i++) {
+            $temporary .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+
+        $user->forceFill(['password' => $temporary])->save();
+        $user->tokens()->delete(); // déconnecte le membre partout
+
+        return response()->json(['temporary_password' => $temporary]);
+    }
+
 }

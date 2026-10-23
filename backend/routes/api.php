@@ -17,6 +17,8 @@ use App\Http\Controllers\HomeContentController;
 use App\Models\SectionItem;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\GroupMessageController;
+use App\Http\Controllers\FundraiserController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -37,6 +39,9 @@ Route::prefix('v1')->group(function () {
         ->where('reference', '[A-Za-z0-9\-]+')
         ->middleware('throttle:30,1');
 
+    Route::get('fundraisers', [FundraiserController::class, 'index']);
+    Route::get('fundraisers/{id}', [FundraiserController::class, 'show'])->whereNumber('id');
+
     // --- Connecté ---
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
@@ -54,6 +59,8 @@ Route::prefix('v1')->group(function () {
 
             Route::post('me/profile', [ProfileController::class, 'update']);
             Route::post('me/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:5,1');
+
+            Route::post('fundraisers/{fundraiser}/contribute', [FundraiserController::class, 'contribute'])->middleware('throttle:10,1');
 
             // Messagerie entre membres
             Route::get('directory', [ConversationController::class, 'directory']);
@@ -88,6 +95,10 @@ Route::prefix('v1')->group(function () {
                 Route::post('hero-slides/reorder', [Admin\HeroSlideController::class, 'reorder']);
                 Route::apiResource('hero-slides', Admin\HeroSlideController::class)->except(['show']);
 
+                Route::get('group-messages', [Admin\GroupMessageController::class, 'index']);
+                Route::get('group-messages/audience', [Admin\GroupMessageController::class, 'audience']);
+                Route::post('group-messages', [Admin\GroupMessageController::class, 'store'])->middleware('throttle:10,1');
+
                 Route::post('faces/reorder', [Admin\FaceController::class, 'reorder']);
                 Route::apiResource('faces', Admin\FaceController::class)->except(['show']);
                 Route::prefix('sections/{section}')
@@ -101,6 +112,15 @@ Route::prefix('v1')->group(function () {
                 });
 
                 Route::get('stats/monthly', [Admin\StatsController::class, 'monthly']);
+
+                Route::get('stats/income', [Admin\StatsController::class, 'income']);
+
+                Route::get('fundraisers', [Admin\FundraiserController::class, 'index']);
+                Route::post('fundraisers', [Admin\FundraiserController::class, 'store']);
+                Route::put('fundraisers/{fundraiser}', [Admin\FundraiserController::class, 'update']);
+                Route::delete('fundraisers/{fundraiser}', [Admin\FundraiserController::class, 'destroy']);
+                Route::get('fundraisers/{fundraiser}/contributions', [Admin\FundraiserController::class, 'contributions']);
+                Route::post('fundraisers/{fundraiser}/contributions', [Admin\FundraiserController::class, 'recordOffline']);
             });
         });
     });

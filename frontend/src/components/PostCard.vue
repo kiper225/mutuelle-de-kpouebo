@@ -125,7 +125,9 @@ async function toggleHidden(c) {
 }
 
 async function share() {
-  const url = `${window.location.origin}${detailLink.value}`
+  // const url = `${window.location.origin}${detailLink.value}`
+  const base = (import.meta.env.VITE_PUBLIC_URL || window.location.origin).replace(/\/$/, '')
+  const url = `${base}${detailLink.value}`
   try {
     if (navigator.share) {
       await navigator.share({ title: props.pub.title, url })

@@ -30,6 +30,7 @@ const shortcuts = computed(() =>
       <RouterLink to="/don" class="fb-link"><span class="fb-ico"><AdminIcon name="heart" /></span>Faire un don</RouterLink>
       <RouterLink v-if="!isLoggedIn" to="/inscription" class="fb-link"><span class="fb-ico"><AdminIcon name="users" /></span>Devenir membre</RouterLink>
       <RouterLink to="/la-mutuelle" class="fb-link"><span class="fb-ico"><AdminIcon name="image" /></span>La mutuelle</RouterLink>
+      <RouterLink to="/collectes" class="fb-link"><span class="fb-ico"><AdminIcon name="gift" /></span>Levées de fonds</RouterLink>
     </nav>
   </aside>
 </template>

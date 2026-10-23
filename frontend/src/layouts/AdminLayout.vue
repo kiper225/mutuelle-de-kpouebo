@@ -1,12 +1,13 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { auth, logout } from '../auth'
+import { auth, logout, refreshUnread } from '../auth'
 import AdminIcon from '../components/AdminIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
 const open = ref(false) // menu ouvert sur téléphone
+let timer = null
 
 const groups = [
   {
@@ -15,6 +16,10 @@ const groups = [
       { to: '/admin', label: 'Tableau de bord', icon: 'dashboard', exact: true },
       { to: '/admin/membres', label: 'Membres', icon: 'users' },
     ],
+  },
+  {
+    label: 'Communication',
+    items: [{ to: '/admin/messagerie', label: 'Messagerie', icon: 'chat', badge: true }],
   },
   {
     label: 'Contenu',
@@ -26,6 +31,10 @@ const groups = [
       { to: '/admin/cotisations', label: 'Cotisations', icon: 'wallet' },
       { to: '/admin/donations', label: 'Dons', icon: 'heart' },
     ],
+  },
+  {
+    label: 'Levées de fonds',
+    items: [{ to: '/admin/collectes', label: 'Collectes', icon: 'gift' }],
   },
   {
     label: 'Site',
@@ -46,7 +55,16 @@ const initial = computed(() => (auth.user?.first_names || auth.user?.name || '?'
 
 const isActive = (item) => (item.exact ? route.path === item.to : route.path.startsWith(item.to))
 
-watch(() => route.fullPath, () => (open.value = false))
+watch(() => route.fullPath, () => {
+  open.value = false
+  refreshUnread()
+})
+
+onMounted(() => {
+  refreshUnread()
+  timer = setInterval(refreshUnread, 30000) // notification : messages non lus, mise à jour toutes les 30 secondes
+})
+onBeforeUnmount(() => clearInterval(timer))
 
 async function onLogout() {
   await logout()
@@ -71,6 +89,9 @@ async function onLogout() {
           <RouterLink v-for="item in g.items" :key="item.to" :to="item.to" class="side-link" :class="{ active: isActive(item) }">
             <AdminIcon :name="item.icon" />
             {{ item.label }}
+            <span v-if="item.badge && auth.unread" class="side-badge" :aria-label="`${auth.unread} message(s) non lu(s)`">
+              {{ auth.unread > 99 ? '99+' : auth.unread }}
+            </span>
           </RouterLink>
         </div>
       </nav>
@@ -95,6 +116,7 @@ async function onLogout() {
       <header class="admin-topbar">
         <button class="icon-btn" type="button" aria-label="Ouvrir le menu" @click="open = !open">
           <AdminIcon name="menu" />
+          <span v-if="auth.unread" class="dot" aria-hidden="true"></span>
         </button>
         <div class="admin-title">
           <h1>{{ title }}</h1>

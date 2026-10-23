@@ -351,6 +351,7 @@ onBeforeUnmount(() => {
               <div v-if="it.type === 'day'" class="wa-day"><span>{{ it.label }}</span></div>
               <div v-else class="wa-row" :class="{ mine: it.mine }">
                 <div class="wa-bubble" :class="{ mine: it.mine, tail: it.first }">
+                  <span v-if="it.msg.group_message_id" class="wa-tag">Message groupé</span>
                   <span class="prose">{{ it.msg.body }}</span>
                   <span class="wa-meta">
                     {{ timeOf(it.msg.created_at) }}
