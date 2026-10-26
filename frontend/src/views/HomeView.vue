@@ -5,20 +5,23 @@ import { site } from '../content'
 import PublicationCard from '../components/PublicationCard.vue'
 import PresidentCard from '../components/PresidentCard.vue'
 import VideoBlock from '../components/VideoBlock.vue'
-import ValuesGrid from '../components/ValuesGrid.vue'
 import BureauGrid from '../components/BureauGrid.vue'
 import HeroCarousel from '../components/HeroCarousel.vue'
 import NewsCarousel from '../components/NewsCarousel.vue'
 import FacesCarousel from '../components/FacesCarousel.vue'
 import { useHomeContent } from '../composables/homeContent'
+import ValuesGrid from '../components/ValuesGrid.vue'
+import AxesGrid from '../components/AxesGrid.vue'
+
 
 const latest = ref([])
 const loadError = ref('')
 // Carrousel d'accueil et visages : gérés depuis l'administration.
 // Sans diapositive enregistrée, on garde celles de content.js.
-const slides = ref(site.slides || [])
-const faces = ref([])
-const { values, bureau } = useHomeContent()
+//const slides = ref(site.slides || [])
+//const faces = ref([])
+//const { values, bureau } = useHomeContent()
+const { ready, slides, faces, axes, values, bureau } = useHomeContent()
 
 const mapSlide = (s) => ({
   eyebrow: s.eyebrow || '',
@@ -68,14 +71,24 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="section band-green">
+    <section class="section alt">
+      <div class="container">
+        <h2 class="center text-3xl md:text-4xl font-bold" style="color: var(--green)">Levées de fonds (collectes)</h2>
+        <p class="center narrow" style="margin-bottom: 32px">
+          En plus des cotisations mensuelles, la mutuelle lance des collectes pour financer les chantiers et les activités de <span class="uppercase">Kpouèbo</span>.
+          Découvrez celles qui sont en cours et contribuez à votre mesure.
+        </p>
+        <RouterLink to="/collectes" class="btn green">Voir les collectes</RouterLink>
+      </div>
+    </section>
+
+     <section class="section band-green">
       <div class="container">
         <h2 class="center text-3xl md:text-4xl font-bold">Découvrez nos axes d'action</h2>
-        <div class="grid">
-          <div v-for="axe in site.axes" :key="axe.title" class="card">
-            <b>{{ axe.title }}</b><br />{{ axe.text }}
-          </div>
-        </div>
+        <p class="center narrow" style="margin-bottom: 32px">
+          {{ site.axesIntro || 'La mutuelle de développement de Kpouèbo agit dans plusieurs domaines pour améliorer la vie des habitants et soutenir le développement local.' }}
+        </p>
+        <AxesGrid :axes="axes" />
       </div>
     </section>
 
@@ -108,7 +121,7 @@ onMounted(async () => {
           La mutuelle de développement de Kpouèbo s’appuie sur des valeurs fortes pour mener à bien sa mission.
           Car ce qui nous unit est basée sur des principes, mais aussi par une conviction profonde de solidarité et de responsabilité favorisée par des projets concrets, innovants avec une jeunesse engagée.
         </p>
-        <ValuesGrid />
+        <ValuesGrid :values="values" />
       </div>
     </section>
 

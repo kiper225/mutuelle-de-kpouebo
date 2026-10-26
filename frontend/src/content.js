@@ -17,11 +17,12 @@ export const site = {
     message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure,',
     photo: '',
   },
+  axesIntro: 'Notre mutuelle s\’engage à promouvoir le développement de Kpouèbo à travers quatre principaux axes : l\’éducation et la culture, la santé et le bien-être, l\’économie et l\’emploi, ainsi que l\’environnement et la durabilité. Ces axes sont au cœur de nos actions et de nos projets, visant à améliorer la qualité de vie de nos membres et à renforcer la cohésion sociale au sein de notre communauté.',
   axes: [
-    { title: '[Axe 1]', text: '[Description courte]' },
-    { title: '[Axe 2]', text: '[Description courte]' },
-    { title: '[Axe 3]', text: '[Description courte]' },
-    { title: '[Axe 4]', text: '[Description courte]' },
+    { title: '1. Éducation et Culture', text: '[Description courte]' },
+    { title: '2. Santé et Bien-être', text: '[Description courte]' },
+    { title: '3. Économie et Emploi', text: '[Description courte]' },
+    { title: '4. Environnement et Durabilité', text: '[Description courte]' },
   ],
   village: {
     title: 'Un village au cœur de la Côte d\'Ivoire',

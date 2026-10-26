@@ -221,10 +221,10 @@ button.linklike { background: none; border: 0; cursor: pointer; font-family: inh
 .news-track:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 10px; }
 .news-slide { flex: 0 0 calc((100% - 40px) / 3); min-width: 0; scroll-snap-align: start; display: flex; }
 .news-slide .card { width: 100%; }
-.news-btn { position: absolute; top: 40%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, .15); z-index: 2; }
+.news-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, .15); z-index: 2; }
 .news-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
-.news-btn.prev { left: -14px; }
-.news-btn.next { right: -14px; }
+.news-btn.prev { left: -25px; }
+.news-btn.next { right: -25px; }
 @media (max-width: 900px) { .news-slide { flex-basis: calc((100% - 20px) / 2); } }
 @media (max-width: 600px) {
   .news-slide { flex-basis: 100%; }
