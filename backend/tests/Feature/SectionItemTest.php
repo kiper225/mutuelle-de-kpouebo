@@ -61,13 +61,37 @@ class SectionItemTest extends TestCase
         Storage::disk('public')->assertExists($item->image_path);
     }
 
-    public function test_only_the_board_section_accepts_a_photo(): void
+    public function test_axes_and_values_accept_an_image_and_an_icon(): void
     {
+        Storage::fake('public');
         Sanctum::actingAs($this->user('admin'));
 
         $this->postJson('/api/v1/admin/sections/axes', [
-            'title' => 'Axe', 'image' => UploadedFile::fake()->image('p.jpg'),
-        ])->assertUnprocessable();
+            'title' => 'Santé', 'icon' => 'sante', 'image' => UploadedFile::fake()->image('a.jpg', 800, 600),
+        ])->assertCreated()->assertJsonPath('icon', 'sante');
+
+        $this->postJson('/api/v1/admin/sections/valeurs', ['title' => 'Dialogue', 'icon' => 'dialogue'])->assertCreated();
+
+        $axe = SectionItem::where('section', 'axes')->firstOrFail();
+        Storage::disk('public')->assertExists($axe->image_path);
+    }
+
+    public function test_an_unknown_icon_is_rejected_and_the_board_has_no_icons(): void
+    {
+        Sanctum::actingAs($this->user('admin'));
+
+        $this->postJson('/api/v1/admin/sections/axes', ['title' => 'Axe', 'icon' => 'inconnue'])->assertUnprocessable();
+        $this->postJson('/api/v1/admin/sections/bureau', ['title' => 'Membre', 'icon' => 'sante'])->assertUnprocessable();
+    }
+
+    public function test_an_icon_can_be_removed(): void
+    {
+        $item = SectionItem::forceCreate(['section' => 'axes', 'title' => 'Axe', 'icon' => 'eau', 'position' => 0, 'is_active' => true]);
+        Sanctum::actingAs($this->user('admin'));
+
+        $this->putJson("/api/v1/admin/sections/axes/{$item->id}", ['icon' => null])->assertOk();
+
+        $this->assertNull($item->fresh()->icon);
     }
 
     public function test_an_unknown_section_is_not_found(): void

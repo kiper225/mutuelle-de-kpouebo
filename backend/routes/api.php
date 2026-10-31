@@ -19,12 +19,15 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\GroupMessageController;
 use App\Http\Controllers\FundraiserController;
+use App\Http\Controllers\ProjectController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
     Route::get('publications', [PublicationController::class, 'index']);
     Route::get('publications/{slug}', [PublicationController::class, 'show']);
     Route::get('search', SearchController::class)->middleware('throttle:60,1');
+    Route::get('projects', [ProjectController::class, 'index']);
+    Route::get('projects/{id}', [ProjectController::class, 'show'])->whereNumber('id');
 
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -121,6 +124,11 @@ Route::prefix('v1')->group(function () {
                 Route::delete('fundraisers/{fundraiser}', [Admin\FundraiserController::class, 'destroy']);
                 Route::get('fundraisers/{fundraiser}/contributions', [Admin\FundraiserController::class, 'contributions']);
                 Route::post('fundraisers/{fundraiser}/contributions', [Admin\FundraiserController::class, 'recordOffline']);
+                Route::get('projects', [Admin\ProjectController::class, 'index']);
+                Route::post('projects/reorder', [Admin\ProjectController::class, 'reorder']);
+                Route::post('projects', [Admin\ProjectController::class, 'store']);
+                Route::put('projects/{project}', [Admin\ProjectController::class, 'update']);
+                Route::delete('projects/{project}', [Admin\ProjectController::class, 'destroy']);
             });
         });
     });

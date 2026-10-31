@@ -68,3 +68,6 @@ export function timeAgo(value) {
   const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
   return `Le ${day} à ${time}`
 }
+
+export const PROJECT_STATUS = { en_cours: 'En cours', a_venir: 'À venir', realise: 'Réalisé' }
+export const PROJECT_BADGE = { en_cours: 'warn', a_venir: 'gray', realise: '' }

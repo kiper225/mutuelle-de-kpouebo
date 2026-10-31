@@ -20,7 +20,7 @@ class SectionItemController extends Controller
     {
         $data = $request->validate($this->rules($section, true));
 
-        $item = new SectionItem(Arr::only($data, ['title', 'subtitle', 'text']));
+        $item = new SectionItem(Arr::only($data, ['title', 'subtitle', 'text', 'icon']));
         $item->section = $section;
         $item->position = (int) SectionItem::where('section', $section)->max('position') + 1;
         $item->is_active = $request->boolean('is_active', true);
@@ -41,7 +41,7 @@ class SectionItemController extends Controller
 
         $data = $request->validate($this->rules($section, false));
 
-        $item->fill(Arr::only($data, ['title', 'subtitle', 'text']));
+        $item->fill(Arr::only($data, ['title', 'subtitle', 'text', 'icon']));
 
         if ($request->has('is_active')) {
             $item->is_active = $request->boolean('is_active');
@@ -91,9 +91,12 @@ class SectionItemController extends Controller
             'title' => [$creating ? 'required' : 'sometimes', 'required', 'string', 'max:150'],
             'subtitle' => ['sometimes', 'nullable', 'string', 'max:150'],
             'text' => ['sometimes', 'nullable', 'string', 'max:600'],
+            // Icône prédéfinie : seulement pour les sections qui en acceptent.
+            'icon' => in_array($section, SectionItem::ICON_SECTIONS, true)
+                ? ['sometimes', 'nullable', Rule::in(SectionItem::ICONS)]
+                : ['prohibited'],
             'is_active' => ['sometimes', 'boolean'],
             'remove_image' => ['sometimes', 'boolean'],
-            // Seule la section « bureau » accepte une photo.
             'image' => in_array($section, SectionItem::IMAGE_SECTIONS, true)
                 ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
                 : ['prohibited'],

@@ -8,14 +8,22 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Élément d'une section de l'accueil gérée depuis l'administration.
  * bureau : title = nom, subtitle = fonction, text = citation, image = photo
- * axes / valeurs : title + text
+ * axes / valeurs : title + text, avec une image ou une icône facultatives
  */
 class SectionItem extends Model
 {
     public const SECTIONS = ['bureau', 'axes', 'valeurs'];
-    public const IMAGE_SECTIONS = ['bureau'];
+    public const IMAGE_SECTIONS = ['bureau', 'axes', 'valeurs'];
+    public const ICON_SECTIONS = ['axes', 'valeurs'];
 
-    protected $fillable = ['title', 'subtitle', 'text'];
+    /** Doit rester identique à la liste de src/axisIcons.js côté site. */
+    public const ICONS = [
+        'sante', 'education', 'infrastructures', 'eau', 'agriculture', 'jeunesse', 'entraide', 'culture',
+        'sport', 'environnement', 'emploi', 'habitat', 'securite', 'dialogue', 'transparence',
+        'responsabilite', 'union',
+    ];
+
+    protected $fillable = ['title', 'subtitle', 'text', 'icon'];
 
     protected $appends = ['image_url'];
 

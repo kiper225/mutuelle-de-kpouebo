@@ -4,7 +4,8 @@ import { auth, isAdmin } from './auth'
 const routes = [
   { path: '/', component: () => import('./views/HomeView.vue') },
   { path: '/la-mutuelle', component: () => import('./views/LaMutuelleView.vue') },
-  { path: '/chantiers', component: () => import('./views/NewsListView.vue') },
+  { path: '/chantiers', component: () => import('./views/ProjectsView.vue') },
+  { path: '/chantiers/:id', component: () => import('./views/ProjectDetailView.vue') },
   { path: '/actualites', component: () => import('./views/NewsListView.vue') },
   { path: '/actualites/:slug', component: () => import('./views/NewsDetailView.vue') },
   { path: '/don', component: () => import('./views/DonView.vue') },
@@ -85,6 +86,11 @@ const routes = [
         path: 'collectes',
         component: () => import('./views/admin/AdminFundraisersView.vue'),
         meta: { title: 'Levées de fonds', subtitle: 'Collectes exceptionnelles pour les chantiers et les activités de la mutuelle.' },
+      },
+      {
+        path: 'chantiers',
+        component: () => import('./views/admin/AdminProjectsView.vue'),
+        meta: { title: 'Chantiers et projets', subtitle: 'Chantiers en cours, à venir et réalisés, affichés sur la page « Nos chantiers ».' },
       },
     ],
   },

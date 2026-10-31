@@ -23,7 +23,10 @@ const groups = [
   },
   {
     label: 'Contenu',
-    items: [{ to: '/admin/publications', label: 'Publications', icon: 'file' }],
+    items: [
+      { to: '/admin/publications', label: 'Publications', icon: 'file' }, 
+      { to: '/admin/chantiers', label: 'Chantiers et projets', icon: 'building' }
+    ],
   },
   {
     label: 'Finances',

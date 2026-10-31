@@ -112,17 +112,17 @@ async function submit() {
               <input id="children_count" v-model="form.children_count" type="number" min="0" max="30" required />
               <span class="error">{{ err('children_count') }}</span>
             </div>
-            <div class="row">
-              <div class="field">
-                <label for="father_name">Nom du père</label>
-                <input id="father_name" v-model="form.father_name" type="text" maxlength="150" required />
-                <span class="error">{{ err('father_name') }}</span>
-              </div>
-              <div class="field">
-                <label for="mother_name">Nom de la mère</label>
-                <input id="mother_name" v-model="form.mother_name" type="text" maxlength="150" required />
-                <span class="error">{{ err('mother_name') }}</span>
-              </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="father_name">Nom du père</label>
+              <input id="father_name" v-model="form.father_name" type="text" maxlength="150" required />
+              <span class="error">{{ err('father_name') }}</span>
+            </div>
+            <div class="field">
+              <label for="mother_name">Nom de la mère</label>
+              <input id="mother_name" v-model="form.mother_name" type="text" maxlength="150" required />
+              <span class="error">{{ err('mother_name') }}</span>
             </div>
           </div>
 
@@ -144,6 +144,13 @@ async function submit() {
           </div>
           <div class="row">
             <div class="field">
+              <label for="email">Email</label>
+              <input id="email" v-model="form.email" type="email" required />
+              <span class="error">{{ err('email') }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
               <label for="residence">Lieu de résidence</label>
               <input id="residence" v-model="form.residence" type="text" placeholder="Kpouèbo, Abidjan, autre…" />
             </div>
@@ -152,13 +159,7 @@ async function submit() {
               <input id="mutuelle_role" v-model="form.mutuelle_role" type="text" />
               <span class="muted">Laissez « Membre » si vous n'avez pas de poste. Le bureau vérifiera ce renseignement.</span>
             </div>
-            <div class="field">
-              <label for="email">Email</label>
-              <input id="email" v-model="form.email" type="email" required />
-              <span class="error">{{ err('email') }}</span>
-            </div>
           </div>
-
           <h3 style="margin: 16px 0 0">Votre compte</h3>
           <div class="row">
             <div class="field">

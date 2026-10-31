@@ -1,3 +1,11 @@
+// Description des sections gérables depuis l'administration.
+const ILLUSTRATION = {
+  label: 'Image (facultative)',
+  aspect: 4 / 3,
+  width: 800,
+  hint: "Illustre l'élément sur la page d'accueil. Vous pourrez la recadrer avant l'envoi.",
+}
+
 export const SECTION_CONFIG = {
   bureau: {
     singular: 'membre du bureau',
@@ -6,6 +14,7 @@ export const SECTION_CONFIG = {
     subtitleLabel: 'Fonction au bureau',
     textLabel: 'Citation ou message',
     image: { label: 'Photo', aspect: 3 / 4, width: 600, hint: "Portrait vertical : vous pourrez le recadrer avant l'envoi." },
+    icons: false,
   },
   axes: {
     singular: "axe d'action",
@@ -13,7 +22,8 @@ export const SECTION_CONFIG = {
     titleLabel: 'Titre',
     subtitleLabel: null,
     textLabel: 'Description courte',
-    image: null,
+    image: ILLUSTRATION,
+    icons: true,
   },
   valeurs: {
     singular: 'valeur',
@@ -21,6 +31,7 @@ export const SECTION_CONFIG = {
     titleLabel: 'Valeur',
     subtitleLabel: null,
     textLabel: 'Phrase',
-    image: null,
+    image: ILLUSTRATION,
+    icons: true,
   },
 }

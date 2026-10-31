@@ -191,17 +191,17 @@ onMounted(load)
           Une collecte sert à lever des fonds en plus des cotisations mensuelles, pour un chantier ou une activité de la mutuelle.
         </p>
 
-        <div class="field">
+        <div class="">
           <label for="f-title">Titre</label>
           <input id="f-title" v-model="form.title" type="text" required maxlength="150" />
           <span class="error">{{ err('title') }}</span>
         </div>
-        <div class="field">
+        <div class="">
           <label for="f-summary">Résumé en quelques mots (300 caractères maximum)</label>
           <input id="f-summary" v-model="form.summary" type="text" maxlength="300" />
           <span class="error">{{ err('summary') }}</span>
         </div>
-        <div class="field">
+        <div class="">
           <label for="f-desc">Explication de l'activité (2 000 caractères maximum)</label>
           <textarea id="f-desc" v-model="form.description" rows="5" maxlength="2000"></textarea>
           <span class="error">{{ err('description') }}</span>

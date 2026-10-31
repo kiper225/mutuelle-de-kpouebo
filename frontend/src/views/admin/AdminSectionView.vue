@@ -3,13 +3,17 @@ import { reactive, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '../../api'
 import { SECTION_CONFIG } from '../../sections'
+import { AXIS_ICONS } from '../../axisIcons'
 import PhotoField from '../../components/PhotoField.vue'
+import AxisIcon from '../../components/AxisIcon.vue'
 
 const route = useRoute()
 const section = computed(() => String(route.meta.section))
 const cfg = computed(() => SECTION_CONFIG[section.value])
 
-const emptyForm = () => ({ id: null, title: '', subtitle: '', text: '', is_active: true, image: null, image_url: '', remove_image: false })
+const emptyForm = () => ({
+  id: null, title: '', subtitle: '', text: '', icon: '', is_active: true, image: null, image_url: '', remove_image: false,
+})
 
 const items = ref([])
 const form = reactive(emptyForm())
@@ -42,6 +46,7 @@ function edit(item) {
     title: item.title,
     subtitle: item.subtitle || '',
     text: item.text || '',
+    icon: item.icon || '',
     is_active: !!item.is_active,
     image: null,
     image_url: item.image_url || '',
@@ -62,6 +67,7 @@ async function save() {
     fd.append('title', form.title)
     if (cfg.value.subtitleLabel) fd.append('subtitle', form.subtitle) // une valeur vide efface le champ
     fd.append('text', form.text)
+    if (cfg.value.icons) fd.append('icon', form.icon) // vide = pas d'icône
     fd.append('is_active', form.is_active ? '1' : '0')
     if (cfg.value.image) {
       if (form.image) fd.append('image', form.image)
@@ -142,10 +148,32 @@ watch(
             <span class="error">{{ err('subtitle') }}</span>
           </div>
         </div>
-        <div>
+        <div class="field">
           <label for="text">{{ cfg.textLabel }} (600 caractères maximum)</label>
           <textarea id="text" v-model="form.text" rows="3" maxlength="600"></textarea>
           <span class="error">{{ err('text') }}</span>
+        </div>
+
+        <!-- Icône à choisir dans une liste -->
+        <div v-if="cfg.icons" class="field">
+          <label>Icône (facultative)</label>
+          <div class="icon-picker" role="radiogroup" aria-label="Icône">
+            <button
+              type="button" class="icon-opt" :class="{ on: !form.icon }" role="radio" :aria-checked="!form.icon"
+              @click="form.icon = ''"
+            >
+              <span>Aucune</span>
+            </button>
+            <button
+              v-for="(ic, key) in AXIS_ICONS" :key="key" type="button" class="icon-opt" :class="{ on: form.icon === key }"
+              role="radio" :aria-checked="form.icon === key" :title="ic.label" @click="form.icon = key"
+            >
+              <AxisIcon :name="key" />
+              <span>{{ ic.label }}</span>
+            </button>
+          </div>
+          <span class="muted">L'icône s'affiche seulement si vous n'ajoutez pas d'image.</span>
+          <span class="error">{{ err('icon') }}</span>
         </div>
 
         <template v-if="cfg.image">
@@ -161,7 +189,7 @@ watch(
           />
           <label v-if="form.id && form.image_url && !form.image" class="check">
             <input v-model="form.remove_image" type="checkbox" />
-            Supprimer la photo actuelle
+            Supprimer l'image actuelle
           </label>
         </template>
 
@@ -189,7 +217,10 @@ watch(
             <li v-for="(it, i) in items" :key="it.id" class="manage-item">
               <template v-if="cfg.image">
                 <img v-if="it.image_url" :src="it.image_url" alt="" class="manage-thumb portrait" />
-                <span v-else class="manage-thumb portrait manage-initial">{{ initial(it.title) }}</span>
+                <span v-else class="manage-thumb portrait manage-initial">
+                  <AxisIcon v-if="it.icon" :name="it.icon" />
+                  <template v-else>{{ initial(it.title) }}</template>
+                </span>
               </template>
               <span v-else class="manage-thumb portrait manage-initial">{{ i + 1 }}</span>
               <div class="manage-info">

@@ -35,7 +35,7 @@ const mapSlide = (s) => ({
 })
 const mapFace = (f) => ({ name: f.name, role: f.role || '', text: f.text || '', photo: f.photo_url || '' })
 const mapBureau = (i) => ({ name: i.title, role: i.subtitle || '', quote: i.text || '', photo: i.image_url || '' })
-const mapText = (i) => ({ title: i.title, text: i.text || '' })
+const mapIllustrated = (i) => ({ title: i.title, text: i.text || '', icon: i.icon || '', image: i.image_url || '' })
 
 /**
  * Contenu géré depuis l'administration, avec repli sur content.js tant qu'une section n'a aucun élément enregistré.
@@ -58,7 +58,7 @@ export function useHomeContent() {
     }),
     faces: computed(() => (state.data?.faces || []).map(mapFace)),
     bureau: computed(() => section('bureau', mapBureau, site.bureau)),
-    axes: computed(() => section('axes', mapText, site.axes)),
-    values: computed(() => section('valeurs', mapText, site.values)),
+    axes: computed(() => section('axes', mapIllustrated, site.axes)),
+    values: computed(() => section('valeurs', mapIllustrated, site.values)),
   }
 }

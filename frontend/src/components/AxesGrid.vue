@@ -1,4 +1,6 @@
 <script setup>
+import AxisIcon from './AxisIcon.vue'
+
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({ axes: { type: Array, required: true } })
@@ -92,15 +94,20 @@ onBeforeUnmount(() => {
     @touchend.passive="paused = false"
   >
     <div ref="track" class="news-track" tabindex="0" @scroll.passive="update">
-      <div v-for="(s, i) in axes" :key="i" class="face-slide">
-        <article class="face-card">
-          <div class="face-body">
-            <h3 class="center md:text-2xl font-bold">{{ s.title }}</h3>
-            <p v-if="s.text" style="color: var(--green)">{{ s.text }}</p>
+      <div v-for="(s, i) in axes" :key="i" class="w-full md:w-1/3 bg-transparent snap-start shrink-0">
+        <article class="flex flex-col items-center text-center bg-transparent pt-12 pb-6 relative">
+          <div class="w-16 h-16 mb-[-2rem] z-10">
+            <img v-if="s.image" :src="s.image" :alt="s.title" class="w-full h-full object-contain bg-white rounded-full shadow-lg flex items-center justify-center p-2 item-media" loading="lazy" />
+            <AxisIcon v-else-if="s.icon" :name="s.icon" class="w-full h-full object-contain bg-white rounded-full shadow-lg flex items-center justify-center p-2 item-media" />
+          </div>
+          <div class="mt-4 pt-4 min-h-[150px] bg-white rounded-lg shadow-md px-4 pb-6">
+            <h3 class="center text-green-700 font-semibold text-lg pt-5">{{ s.title }}</h3>
+            <p v-if="s.text" class="text-gray-600 text-sm mt-2">{{ s.text }}</p>
           </div>
         </article>
       </div>
     </div>
+    
 
     <template v-if="canPrev || canNext">
       <button class="news-btn prev" type="button" aria-label="Visages précédents" @click="prev">‹</button>

@@ -1,5 +1,7 @@
 <script setup>
 import { site } from '../content'
+// Seuls les réseaux avec une adresse sont affichés.
+const socials = (site.social || []).filter((s) => s.url)
 const year = new Date().getFullYear()
 </script>
 
@@ -46,17 +48,16 @@ const year = new Date().getFullYear()
         </div>
         <div>
           <b>FAQ</b><br />
-          <RouterLink :href="site.social.facebook" target="_blank" rel="noopener noreferrer">Comment ça marche ?</RouterLink><br />
-          <RouterLink :href="site.social.instagram" target="_blank" rel="noopener noreferrer">Comment faire un don ?</RouterLink><br />
-          <RouterLink :href="site.social.youtube" target="_blank" rel="noopener noreferrer">Comment devenir membre ?</RouterLink><br />
-          <RouterLink :href="site.social.linkedin" target="_blank" rel="noopener noreferrer">Comment nous contacter ?</RouterLink>
+          <RouterLink to="" target="_blank" rel="noopener noreferrer">Comment ça marche ?</RouterLink><br />
+          <RouterLink to="" target="_blank" rel="noopener noreferrer">Comment faire un don ?</RouterLink><br />
+          <RouterLink to="" target="_blank" rel="noopener noreferrer">Comment devenir membre ?</RouterLink><br />
+          <RouterLink to="" target="_blank" rel="noopener noreferrer">Comment nous contacter ?</RouterLink>
         </div>
         <div>
           <b>Suivez-nous</b><br />
-          <RouterLink :href="site.social.facebook" target="_blank" rel="noopener noreferrer">Facebook</RouterLink><br />
-          <RouterLink :href="site.social.instagram" target="_blank" rel="noopener noreferrer">Instagram</RouterLink><br />
-          <RouterLink :href="site.social.youtube" target="_blank" rel="noopener noreferrer">YouTube</RouterLink><br />
-          <RouterLink :href="site.social.linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</RouterLink>
+          <div v-if="socials.length" style="margin-top: 10px">
+            <a v-for="s in socials" :key="s.label" :href="s.url" target="_blank" rel="noopener noreferrer" style="margin-right: 12px">{{ s.label }}</a>
+          </div>
         </div>
       </div>
     </footer>

@@ -85,10 +85,10 @@ export const site = {
   ],
   // Réseaux sociaux affichés dans le bandeau vert (laissez url vide pour ne pas les afficher)
   social: [
-    { label: 'Facebook', url: '' },
-    { label: 'Instagram', url: '' },
-    { label: 'YouTube', url: '' },
-  ],
+  { label: 'Facebook', url: 'https://www.facebook.com/share/g/1C8jKNQFb7/' },
+  { label: 'Instagram', url: 'instagram.com/kpouebo' },
+  { label: 'YouTube', url: 'youtube.com/kpouebo' },
+],
 
   // Section « Visages emblématiques de Kpouèbo » (photo : fichier dans public/img, ex. '/img/visage1.jpg', ou '' pour l'initiale)
   faces: {

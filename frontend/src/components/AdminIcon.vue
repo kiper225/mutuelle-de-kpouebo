@@ -17,6 +17,8 @@ const ICONS = {
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
   chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
   gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8c-1.5-3-5-3.500-5-1.200C7 8 9 8 12 8zM12 8c1.500-3 5-3.500 5-1.200 0 1.200-2 1.200-5 1.200z"/>',
+  building: '<rect x="4" y="3" width="10" height="18" rx="1"/><path d="M14 9h5a1 1 0 0 1 1 1v11M8 7h2M8 11h2M8 15h2M17 13h.01M17 17h.01"/>',
+
 }
 </script>
 

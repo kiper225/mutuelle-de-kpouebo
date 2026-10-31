@@ -12,6 +12,7 @@ import FacesCarousel from '../components/FacesCarousel.vue'
 import { useHomeContent } from '../composables/homeContent'
 import ValuesGrid from '../components/ValuesGrid.vue'
 import AxesGrid from '../components/AxesGrid.vue'
+import AxisIcon from '../components/AxisIcon.vue'
 
 
 const latest = ref([])
