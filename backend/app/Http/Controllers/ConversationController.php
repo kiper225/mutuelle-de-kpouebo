@@ -9,23 +9,27 @@ use Illuminate\Http\Request;
 /** Messagerie privée entre membres actifs (conversations à deux). */
 class ConversationController extends Controller
 {
-    /** Annuaire : retrouver un membre par son nom pour lui écrire (nom et photo uniquement). */
+    /** Annuaire : retrouver un membre par son nom pour lui écrire (nom, photo et statut « en ligne » uniquement). */
     public function directory(Request $request)
     {
+        $viewer = $request->user();
         $q = trim((string) $request->query('q', ''));
 
         return User::where('status', User::STATUS_ACTIVE)
-            ->where('id', '!=', $request->user()->id)
+            ->where('id', '!=', $viewer->id)
             ->when($q !== '', fn ($query) => $query->where('name', 'like', '%'.addcslashes($q, '%_\\').'%'))
             ->orderBy('name')
             ->limit(20)
-            ->get(['id', 'name', 'photo_path']);
+            ->get(['id', 'name', 'photo_path', 'last_seen_at', 'show_presence'])
+            ->map(fn (User $u) => $u->only(['id', 'name', 'photo_url']) + ['online' => $u->isOnlineFor($viewer)])
+            ->values();
     }
 
-    /** Liste des conversations : dernier message et nombre de messages non lus. */
+    /** Liste des conversations : dernier message, nombre de messages non lus et statut « en ligne ». */
     public function index(Request $request)
     {
-        $me = $request->user()->id;
+        $viewer = $request->user();
+        $me = $viewer->id;
 
         $latestIds = Message::selectRaw('MAX(id) as id')
             ->where(fn ($q) => $q->where('sender_id', $me)->orWhere('recipient_id', $me))
@@ -37,15 +41,18 @@ class ConversationController extends Controller
             ->groupBy('sender_id')
             ->pluck('total', 'sender_id');
 
-        return Message::with(['sender:id,name,photo_path', 'recipient:id,name,photo_path'])
+        return Message::with([
+                'sender:id,name,photo_path,last_seen_at,show_presence',
+                'recipient:id,name,photo_path,last_seen_at,show_presence',
+            ])
             ->whereIn('id', $latestIds)
             ->orderByDesc('id')
             ->get()
-            ->map(function (Message $m) use ($me, $unread) {
+            ->map(function (Message $m) use ($me, $viewer, $unread) {
                 $other = $m->sender_id === $me ? $m->recipient : $m->sender;
 
                 return [
-                    'user' => $other->only(['id', 'name', 'photo_url']),
+                    'user' => $other->only(['id', 'name', 'photo_url']) + ['online' => $other->isOnlineFor($viewer)],
                     'last_message' => ['body' => $m->body, 'created_at' => $m->created_at, 'mine' => $m->sender_id === $me],
                     'unread' => (int) ($unread[$other->id] ?? 0),
                 ];
@@ -69,7 +76,10 @@ class ConversationController extends Controller
             ->reverse()
             ->values();
 
-        return ['user' => $user->only(['id', 'name', 'photo_url']), 'messages' => $messages];
+        return [
+            'user' => $user->only(['id', 'name', 'photo_url']) + ['online' => $user->isOnlineFor($request->user())],
+            'messages' => $messages,
+        ];
     }
 
     public function store(Request $request, User $user)

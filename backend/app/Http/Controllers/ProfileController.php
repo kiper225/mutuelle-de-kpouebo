@@ -23,6 +23,7 @@ class ProfileController extends Controller
             'profession' => ['sometimes', 'nullable', 'string', 'max:150'],
             'residence' => ['sometimes', 'nullable', 'string', 'max:150'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'show_presence' => ['sometimes', 'boolean'],
         ]);
 
         // Seuls les champs validés ci-dessus sont appliqués : nom, poste, rôle, statut… sont ignorés.

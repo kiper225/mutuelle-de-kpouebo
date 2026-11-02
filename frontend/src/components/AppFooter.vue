@@ -62,7 +62,7 @@ const year = new Date().getFullYear()
       </div>
     </footer>
     <div class="copyright">
-      <div class="container">© {{ year }} {{ site.name }}. Tous droits réservés_________________________________________________________________________________________________________________________________________ Développé par  : <a href="https://github.com/kiper225" target="_blank" rel="noopener noreferrer">GERVAIS KIPRE</a></div>
+      <div class="container">© {{ year }} {{ site.name }}. Tous droits réservés_____________________________________________________________________________________________________________________ Développé par  : <a href="https://github.com/kiper225" target="_blank" rel="noopener noreferrer">GERVAIS KIPRE</a></div>
     </div>
   </div>
 </template>

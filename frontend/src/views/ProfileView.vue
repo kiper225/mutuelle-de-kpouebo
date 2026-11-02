@@ -13,6 +13,7 @@ const form = reactive({
   children_count: u.children_count ?? '',
   profession: u.profession || '',
   residence: u.residence || '',
+  show_presence: u.show_presence ?? true,
 })
 const photo = ref(null)
 const photoKey = ref(0)
@@ -37,8 +38,10 @@ async function save() {
   success.value = ''
   try {
     const fd = new FormData()
-    for (const [key, value] of Object.entries(form)) fd.append(key, value) // une valeur vide efface le champ
-    if (photo.value) fd.append('photo', photo.value)
+    for (const [key, value] of Object.entries(form)) {
+      if (key !== 'show_presence') fd.append(key, value) // une valeur vide efface le champ
+    }
+    fd.append('show_presence', form.show_presence ? '1' : '0')
 
     const updated = await api.post('/me/profile', fd)
     Object.assign(auth.user, updated)
@@ -142,11 +145,18 @@ async function changePassword() {
               <span class="error">{{ err('profession') }}</span>
             </div>
           </div>
-          <div class="">
+          <div class="field">
             <label for="residence">Lieu de résidence</label>
             <input id="residence" v-model="form.residence" type="text" />
             <span class="error">{{ err('residence') }}</span>
           </div>
+          <label class="check">
+            <input v-model="form.show_presence" type="checkbox" />
+            <span>
+              Afficher mon statut « en ligne » aux autres membres.
+              Si vous le masquez, vous ne voyez pas non plus celui des autres.
+            </span>
+          </label>
           <button class="btn green" type="submit" :disabled="saving" style="align-self: flex-start">
             {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
           </button>

@@ -5,10 +5,43 @@ export const auth = reactive({ user: null, unread: 0 })
 export const isLoggedIn = computed(() => !!auth.user)
 export const isAdmin = computed(() => auth.user?.role === 'admin')
 
+/* ---------- Présence « en ligne » ---------- */
+// Un signal toutes les 45 secondes, seulement quand l'onglet est visible.
+// Le serveur considère « en ligne » un membre vu depuis moins de 90 secondes.
+const PING_EVERY = 45000
+let presenceTimer = null
+
+function ping() {
+  if (auth.user && document.visibilityState === 'visible') {
+    api.post('/presence').catch(() => {
+      /* sans conséquence : le prochain signal réessaiera */
+    })
+  }
+}
+
+function onVisible() {
+  if (document.visibilityState === 'visible') ping()
+}
+
+export function stopPresence() {
+  clearInterval(presenceTimer)
+  presenceTimer = null
+  document.removeEventListener('visibilitychange', onVisible)
+}
+
+export function startPresence() {
+  stopPresence()
+  ping()
+  presenceTimer = setInterval(ping, PING_EVERY)
+  document.addEventListener('visibilitychange', onVisible)
+}
+
+/* ---------- Session ---------- */
 export async function initAuth() {
   if (!tokenStore.get()) return
   try {
     auth.user = await api.get('/me')
+    startPresence()
   } catch {
     tokenStore.clear()
     auth.user = null
@@ -32,10 +65,12 @@ export async function login(loginValue, password) {
   const res = await api.post('/login', { login: loginValue, password })
   tokenStore.set(res.token)
   auth.user = res.user
+  startPresence()
   return res.user
 }
 
 export async function logout() {
+  stopPresence()
   try {
     await api.post('/logout')
   } catch {
@@ -47,6 +82,7 @@ export async function logout() {
 }
 
 setUnauthorizedHandler(() => {
+  stopPresence()
   tokenStore.clear()
   auth.user = null
   auth.unread = 0

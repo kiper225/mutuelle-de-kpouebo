@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { auth, isAdmin, logout, refreshUnread } from '../auth'
+import PresenceAvatar from '../components/PresenceAvatar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -288,8 +289,7 @@ onBeforeUnmount(() => {
             v-for="c in filteredConversations" :key="c.user.id" type="button" class="wa-chat"
             :class="{ active: c.user.id === currentId }" @click="open(c.user.id)"
           >
-            <img v-if="c.user.photo_url" :src="c.user.photo_url" alt="" class="avatar" />
-            <span v-else class="avatar">{{ initial(c.user.name) }}</span>
+            <PresenceAvatar :name="c.user.name" :photo="c.user.photo_url" :online="c.user.online" :size="48" />
             <span class="wa-chat-body">
               <span class="wa-chat-top">
                 <b>{{ c.user.name }}</b>
@@ -309,11 +309,10 @@ onBeforeUnmount(() => {
           <template v-if="others.length">
             <div class="wa-section">Autres membres</div>
             <button v-for="u in others" :key="`u${u.id}`" type="button" class="wa-chat" @click="open(u.id)">
-              <img v-if="u.photo_url" :src="u.photo_url" alt="" class="avatar" />
-              <span v-else class="avatar">{{ initial(u.name) }}</span>
+              <PresenceAvatar :name="u.name" :photo="u.photo_url" :online="u.online" :size="48" />
               <span class="wa-chat-body">
                 <span class="wa-chat-top"><b>{{ u.name }}</b></span>
-                <span class="wa-preview">Démarrer une discussion</span>
+                <span class="wa-preview">{{ u.online ? 'En ligne' : 'Démarrer une discussion' }}</span>
               </span>
             </button>
           </template>
@@ -336,9 +335,11 @@ onBeforeUnmount(() => {
                 <path d="M15 5l-7 7 7 7" />
               </svg>
             </button>
-            <img v-if="thread?.user.photo_url" :src="thread.user.photo_url" alt="" class="avatar" />
-            <span v-else class="avatar">{{ initial(thread?.user.name) }}</span>
-            <b>{{ thread?.user.name || '…' }}</b>
+            <PresenceAvatar :name="thread?.user.name" :photo="thread?.user.photo_url" :online="thread?.user.online" :size="42" />
+            <div class="wa-head-name">
+              <b>{{ thread?.user.name || '…' }}</b>
+              <span v-if="thread?.user.online" class="wa-status">En ligne</span>
+            </div>
           </header>
 
           <p v-if="error" class="alert err wa-alert">{{ error }}</p>
@@ -371,8 +372,8 @@ onBeforeUnmount(() => {
               aria-label="Votre message" @keydown="onComposerKey" @input="resizeComposer"
             ></textarea>
             <button class="wa-send" type="submit" :disabled="!draft.trim() || sending" aria-label="Envoyer">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
-                <path d="M3.4 20.4l17.5-7.5a1 1 0 0 0 0-1.8L3.4 3.6a1 1 0 0 0-1.4 1.2L4.1 11l9 1-9 1-2.1 6.2a1 1 0 0 0 1.4 1.2z" />
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+                <polygon points="3.5,4 20.5,12 3.5,20 7.5,12" />
               </svg>
             </button>
           </form>

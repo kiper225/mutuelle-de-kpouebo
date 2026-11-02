@@ -29,7 +29,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'last_name', 'first_names', 'gender', 'email', 'phone',
         'birth_date', 'birth_place', 'father_name', 'mother_name', 'children_count', 'marital_status',
-        'profession', 'residence', 'mutuelle_role', 'photo_path', 'password',
+        'profession', 'residence', 'mutuelle_role', 'photo_path', 'password','show_presence'
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -44,6 +44,8 @@ class User extends Authenticatable
             'children_count' => 'integer',
             'joined_at' => 'datetime',
             'password' => 'hashed',
+            'last_seen_at' => 'datetime',
+            'show_presence' => 'boolean',
         ];
     }
 
@@ -80,5 +82,17 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new MemberResetPassword($token));
+    }
+
+    /** Un membre vu depuis moins de ce nombre de secondes est considéré « en ligne ». */
+    public const ONLINE_WINDOW = 90;
+
+    /** « En ligne » vu par $viewer : les deux doivent afficher leur statut (réciprocité, comme Messenger). */
+    public function isOnlineFor(self $viewer): bool
+    {
+        return $viewer->show_presence
+            && $this->show_presence
+            && $this->last_seen_at !== null
+            && $this->last_seen_at->gt(now()->subSeconds(self::ONLINE_WINDOW));
     }
 }

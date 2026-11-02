@@ -20,6 +20,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\GroupMessageController;
 use App\Http\Controllers\FundraiserController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PresenceController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -64,6 +65,8 @@ Route::prefix('v1')->group(function () {
             Route::post('me/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:5,1');
 
             Route::post('fundraisers/{fundraiser}/contribute', [FundraiserController::class, 'contribute'])->middleware('throttle:10,1');
+
+            Route::post('presence', PresenceController::class)->middleware('throttle:30,1');
 
             // Messagerie entre membres
             Route::get('directory', [ConversationController::class, 'directory']);
