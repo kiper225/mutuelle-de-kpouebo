@@ -104,4 +104,34 @@ class PresenceTest extends TestCase
 
         $this->assertFalse($member->fresh()->show_presence);
     }
+
+    public function test_an_offline_member_shows_how_long_ago_they_were_active(): void
+    {
+        $viewer = $this->member();
+        $online = $this->member();
+        $recent = $this->member();
+        $old = $this->member();
+        $shy = $this->member(['show_presence' => false]);
+
+        $online->forceFill(['last_seen_at' => now()])->save();
+        $recent->forceFill(['last_seen_at' => now()->subMinutes(5)])->save();
+        $old->forceFill(['last_seen_at' => now()->subDays(3)])->save();
+        $shy->forceFill(['last_seen_at' => now()->subMinutes(5)])->save();
+
+        foreach ([$online, $recent, $old, $shy] as $other) {
+            $this->talk($viewer, $other);
+        }
+
+        Sanctum::actingAs($viewer);
+        $rows = collect($this->getJson('/api/v1/conversations')->assertOk()->json())->keyBy('user.id');
+
+        $this->assertTrue($rows[$online->id]['user']['online']);
+        $this->assertNull($rows[$online->id]['user']['last_seen_minutes']);
+
+        $this->assertFalse($rows[$recent->id]['user']['online']);
+        $this->assertSame(5, $rows[$recent->id]['user']['last_seen_minutes']);
+
+        $this->assertNull($rows[$old->id]['user']['last_seen_minutes']);  // plus de 24 h : rien n'est affiché
+        $this->assertNull($rows[$shy->id]['user']['last_seen_minutes']);  // statut masqué : rien n'est affiché
+    }
 }

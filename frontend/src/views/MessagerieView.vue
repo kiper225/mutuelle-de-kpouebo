@@ -53,6 +53,16 @@ function listTime(iso) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' })
 }
 
+/** « En ligne », « Actif il y a 5 min » ou « Actif il y a 3 h » (vide si le membre n'a pas été actif depuis 24 h ou masque son statut). */
+function presenceText(u) {
+  if (!u) return ''
+  if (u.online) return 'En ligne'
+  const m = u.last_seen_minutes
+  if (m === null || m === undefined) return ''
+  if (m < 60) return `Actif il y a ${m} min`
+  return `Actif il y a ${Math.floor(m / 60)} h`
+}
+
 /* ---------- Données dérivées ---------- */
 const filteredConversations = computed(() => {
   const f = normalize(filter.value.trim())
@@ -296,7 +306,7 @@ onBeforeUnmount(() => {
                 <span class="wa-time" :class="{ unread: c.unread }">{{ listTime(c.last_message.created_at) }}</span>
               </span>
               <span class="wa-chat-bottom">
-                <span class="wa-preview">{{ c.last_message.mine ? 'Vous : ' : '' }}{{ c.last_message.body }}</span>
+                <span class="wa-preview">{{ presenceText(c.user) || 'Démarrer une discussion' }}</span>
                 <span v-if="c.unread" class="wa-unread">{{ c.unread > 99 ? '99+' : c.unread }}</span>
               </span>
             </span>
@@ -338,7 +348,7 @@ onBeforeUnmount(() => {
             <PresenceAvatar :name="thread?.user.name" :photo="thread?.user.photo_url" :online="thread?.user.online" :size="42" />
             <div class="wa-head-name">
               <b>{{ thread?.user.name || '…' }}</b>
-              <span v-if="thread?.user.online" class="wa-status">En ligne</span>
+              <span v-if="presenceText(thread?.user)" class="wa-status" :class="{ off: !thread.user.online }">{{ presenceText(thread?.user) }}</span>
             </div>
           </header>
 

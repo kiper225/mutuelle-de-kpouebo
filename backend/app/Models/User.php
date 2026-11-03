@@ -29,12 +29,18 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'last_name', 'first_names', 'gender', 'email', 'phone',
         'birth_date', 'birth_place', 'father_name', 'mother_name', 'children_count', 'marital_status',
-        'profession', 'residence', 'mutuelle_role', 'photo_path', 'password','show_presence'
+        'profession', 'residence', 'mutuelle_role', 'photo_path', 'password','show_presence', 'last_seen_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected $appends = ['photo_url'];
+
+    /** Mêmes valeurs par défaut que la base : un compte tout juste créé affiche son statut. */
+    protected $attributes = [
+        'show_presence' => true,
+    ];
+
 
     protected function casts(): array
     {
@@ -48,6 +54,12 @@ class User extends Authenticatable
             'show_presence' => 'boolean',
         ];
     }
+
+    /** Un membre vu depuis moins de ce nombre de secondes est considéré « en ligne ». */
+    public const ONLINE_WINDOW = 90;
+
+    /** Au-delà de cette durée (24 h), on n'indique plus quand le membre était actif. */
+    public const LAST_SEEN_MAX_MINUTES = 1440;
 
     public function isAdmin(): bool
     {
@@ -84,15 +96,32 @@ class User extends Authenticatable
         $this->notify(new MemberResetPassword($token));
     }
 
-    /** Un membre vu depuis moins de ce nombre de secondes est considéré « en ligne ». */
-    public const ONLINE_WINDOW = 90;
+    /**
+     * Ce que $viewer a le droit de voir de la présence de ce membre : « en ligne », ou depuis combien de minutes il était actif.
+     * Jamais l'heure exacte. Rien n'est visible si l'un des deux a masqué son statut.
+     *
+     * @return array{online: bool, last_seen_minutes: int|null}
+     */
+    public function presenceFor(self $viewer): array
+    {
+        if (! $viewer->show_presence || ! $this->show_presence || $this->last_seen_at === null) {
+            return ['online' => false, 'last_seen_minutes' => null];
+        }
 
-    /** « En ligne » vu par $viewer : les deux doivent afficher leur statut (réciprocité, comme Messenger). */
+        $seconds = max(0, now()->getTimestamp() - $this->last_seen_at->getTimestamp());
+
+        if ($seconds < self::ONLINE_WINDOW) {
+            return ['online' => true, 'last_seen_minutes' => null];
+        }
+
+        $minutes = intdiv($seconds, 60);
+
+        return ['online' => false, 'last_seen_minutes' => $minutes <= self::LAST_SEEN_MAX_MINUTES ? $minutes : null];
+    }
+
+    /** « En ligne » vu par $viewer (les deux doivent afficher leur statut). */
     public function isOnlineFor(self $viewer): bool
     {
-        return $viewer->show_presence
-            && $this->show_presence
-            && $this->last_seen_at !== null
-            && $this->last_seen_at->gt(now()->subSeconds(self::ONLINE_WINDOW));
+        return $this->presenceFor($viewer)['online'];
     }
 }

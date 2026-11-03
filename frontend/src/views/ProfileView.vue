@@ -153,8 +153,8 @@ async function changePassword() {
           <label class="check">
             <input v-model="form.show_presence" type="checkbox" />
             <span>
-              Afficher mon statut « en ligne » aux autres membres.
-              Si vous le masquez, vous ne voyez pas non plus celui des autres.
+              Afficher mon statut « en ligne » et mon heure de dernière activité aux autres membres.
+              Si vous les masquez, vous ne voyez pas non plus ceux des autres.
             </span>
           </label>
           <button class="btn green" type="submit" :disabled="saving" style="align-self: flex-start">

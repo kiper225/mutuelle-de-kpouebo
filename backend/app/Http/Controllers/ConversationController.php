@@ -21,7 +21,7 @@ class ConversationController extends Controller
             ->orderBy('name')
             ->limit(20)
             ->get(['id', 'name', 'photo_path', 'last_seen_at', 'show_presence'])
-            ->map(fn (User $u) => $u->only(['id', 'name', 'photo_url']) + ['online' => $u->isOnlineFor($viewer)])
+            ->map(fn (User $u) => $u->only(['id', 'name', 'photo_url']) + $u->presenceFor($viewer))
             ->values();
     }
 
@@ -52,7 +52,7 @@ class ConversationController extends Controller
                 $other = $m->sender_id === $me ? $m->recipient : $m->sender;
 
                 return [
-                    'user' => $other->only(['id', 'name', 'photo_url']) + ['online' => $other->isOnlineFor($viewer)],
+                    'user' => $other->only(['id', 'name', 'photo_url']) + $other->presenceFor($viewer),
                     'last_message' => ['body' => $m->body, 'created_at' => $m->created_at, 'mine' => $m->sender_id === $me],
                     'unread' => (int) ($unread[$other->id] ?? 0),
                 ];
@@ -77,7 +77,7 @@ class ConversationController extends Controller
             ->values();
 
         return [
-            'user' => $user->only(['id', 'name', 'photo_url']) + ['online' => $user->isOnlineFor($request->user())],
+            'user' => $user->only(['id', 'name', 'photo_url']) + $user->presenceFor($request->user()),
             'messages' => $messages,
         ];
     }

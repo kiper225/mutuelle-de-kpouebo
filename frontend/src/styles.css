@@ -720,3 +720,6 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 /* Bouton d'envoi : icône centrée */
 .wa-send { padding: 0; line-height: 0; }
 .wa-send svg { display: block; }
+
+/* « Actif il y a … » : gris quand le membre n'est plus en ligne */
+.wa-status.off { color: var(--muted); font-weight: 500; }
