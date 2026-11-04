@@ -723,3 +723,63 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 
 /* « Actif il y a … » : gris quand le membre n'est plus en ligne */
 .wa-status.off { color: var(--muted); font-weight: 500; }
+
+/* Messagerie : profil du membre, blocage, suppression, emojis et autocollants */
+.wa { position: relative; }
+.wa-head-btn { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; color: inherit; text-align: left; }
+.wa-head-btn:hover .wa-head-name b { text-decoration: underline; }
+.wa-close { margin-left: auto; flex: none; }
+
+/* Croix de suppression au survol d'une discussion (ordinateur) */
+.wa-chat-item { position: relative; }
+.wa-chat-x { position: absolute; top: 8px; right: 10px; width: 26px; height: 26px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .06); color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; opacity: 0; }
+.wa-chat-item:hover .wa-chat-x, .wa-chat-x:focus-visible { opacity: 1; }
+.wa-chat-item:hover .wa-time { visibility: hidden; }
+.wa-chat-x:hover { background: #fdecea; color: var(--danger); }
+@media (hover: none) { .wa-chat-x { display: none; } }
+
+/* Profil du membre */
+.wa-info { flex: 0 0 320px; border-left: 1px solid var(--line); background: #fff; overflow-y: auto; display: flex; flex-direction: column; }
+.wa-info-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.wa-info-body { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 24px 20px; text-align: center; }
+.wa-info-body h2 { margin: 8px 0 0; font-size: 20px; }
+.wa-info-body .project-facts { width: 100%; text-align: left; margin-top: 12px; }
+.wa-info-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.wa-info-actions .btn { width: 100%; }
+@media (max-width: 1000px) {
+  .wa-info { position: absolute; inset: 0 0 0 auto; width: min(100%, 360px); z-index: 30; box-shadow: -8px 0 24px rgba(0, 0, 0, .15); }
+}
+
+/* Membre bloqué */
+.wa-blocked { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: center; padding: 14px calc(14px + var(--safe-bottom)) 14px; background: var(--bg); border-top: 1px solid var(--line); font-size: 14px; }
+
+/* Panneau d'emojis et d'autocollants */
+.wa-emoji-btn.on { background: rgba(0, 0, 0, .08); color: var(--green); }
+.emoji-panel { background: #fff; border-top: 1px solid var(--line); display: flex; flex-direction: column; height: min(300px, 45dvh); }
+.emoji-tabs { display: flex; border-bottom: 1px solid var(--line); }
+.emoji-tab { flex: 1; padding: 10px; border: 0; border-bottom: 3px solid transparent; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.emoji-tab.on { color: var(--green); border-bottom-color: var(--green); }
+.emoji-groups { display: flex; gap: 2px; padding: 6px 8px; overflow-x: auto; border-bottom: 1px solid #eef1ec; }
+.emoji-group { flex: none; width: 36px; height: 34px; border: 0; border-radius: 8px; background: none; font-size: 20px; cursor: pointer; }
+.emoji-group.on { background: #e6f3ea; }
+.emoji-grid { flex: 1; overflow-y: auto; padding: 8px; display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 2px; align-content: start; }
+.emoji-btn { height: 40px; border: 0; border-radius: 8px; background: none; font-size: 24px; cursor: pointer; }
+.emoji-btn:hover { background: var(--bg); }
+.sticker-grid { flex: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; align-content: start; }
+.sticker-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; }
+.sticker-btn:hover { border-color: var(--green); background: #f4faf6; }
+.sticker-btn .em { font-size: 40px; line-height: 1; }
+.sticker-btn .lb { font-size: 12px; font-weight: 700; color: var(--green-dark); text-align: center; }
+
+/* Autocollants et emojis dans la conversation */
+.wa-sticker-wrap { display: flex; flex-direction: column; align-items: flex-start; max-width: 75%; margin-top: 6px; }
+.wa-sticker-wrap.mine { align-items: flex-end; }
+.wa-sticker { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px 8px; border-radius: 16px; background: rgba(255, 255, 255, .7); }
+.wa-sticker-emoji { font-size: 72px; line-height: 1; }
+.wa-sticker-label { padding: 2px 12px; border-radius: 999px; background: var(--green); color: #fff; font-size: 12px; font-weight: 700; }
+.wa-sticker-wrap .wa-meta { padding: 0 4px; }
+.wa-bubble.big .prose { font-size: 34px; line-height: 1.25; }
+
+/* Bouton d'envoi : icône centrée */
+.wa-send { padding: 0; line-height: 0; }
+.wa-send svg { display: block; }

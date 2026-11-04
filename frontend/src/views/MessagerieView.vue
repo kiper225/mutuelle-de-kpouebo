@@ -3,13 +3,15 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { auth, isAdmin, logout, refreshUnread } from '../auth'
+import { STICKERS } from '../stickers'
 import PresenceAvatar from '../components/PresenceAvatar.vue'
+import EmojiPanel from '../components/EmojiPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
 
 const conversations = ref([])
-const thread = ref(null) // { user, messages }
+const thread = ref(null) // { user, blocked_by_me, messages }
 const draft = ref('')
 const filter = ref('')
 const directory = ref([])
@@ -18,6 +20,14 @@ const sending = ref(false)
 const box = ref(null)
 const composer = ref(null)
 const searchInput = ref(null)
+
+// Profil du membre, panneau d'emojis
+const infoOpen = ref(false)
+const info = ref(null)
+const infoLoading = ref(false)
+const infoError = ref('')
+const busy = ref(false)
+const emojiOpen = ref(false)
 
 let poll = null
 let tick = 0
@@ -32,6 +42,7 @@ const initial = (name) => String(name || '?').trim().charAt(0).toUpperCase()
 const normalize = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 const timeOf = (iso) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 const sameDay = (a, b) => a.toDateString() === b.toDateString()
+const sticker = (id) => STICKERS[id] || { emoji: '❔', label: '' }
 
 function dayLabel(iso) {
   const d = new Date(iso)
@@ -61,6 +72,18 @@ function presenceText(u) {
   if (m === null || m === undefined) return ''
   if (m < 60) return `Actif il y a ${m} min`
   return `Actif il y a ${Math.floor(m / 60)} h`
+}
+
+/** Texte affiché dans la liste des discussions. */
+const previewOf = (m) => (m.kind === 'sticker' ? `Autocollant : ${sticker(m.body).label}` : m.body)
+
+/** Un message qui ne contient que 1 à 3 emojis s'affiche en grand. */
+const EMOJI_ONLY = /^(?:\p{Extended_Pictographic}[\u{1F3FB}-\u{1F3FF}\uFE0F\u200D\p{Extended_Pictographic}]*|\s)+$/u
+function isBigEmoji(body) {
+  const text = String(body || '').trim()
+  if (!text || !EMOJI_ONLY.test(text)) return false
+  const count = typeof Intl.Segmenter === 'function' ? [...new Intl.Segmenter().segment(text)].length : text.length
+  return count <= 3
 }
 
 /* ---------- Données dérivées ---------- */
@@ -132,7 +155,7 @@ async function loadThread({ forceScroll = false } = {}) {
   }
 }
 
-/* ---------- Actions ---------- */
+/* ---------- Envoi ---------- */
 function resizeComposer() {
   nextTick(() => {
     const el = composer.value
@@ -150,33 +173,66 @@ function onComposerKey(event) {
   }
 }
 
-async function send() {
-  const body = draft.value.trim()
-  if (!body || !currentId.value || sending.value || !thread.value) return
+/** Envoie un message texte (kind = 'text') ou un autocollant (kind = 'sticker', body = identifiant). */
+async function submit(body, kind) {
+  if (!currentId.value || sending.value || !thread.value || thread.value.blocked_by_me) return
 
   sending.value = true
   error.value = ''
 
-  const temp = { id: `tmp-${++tmpId}`, sender_id: auth.user.id, body, created_at: new Date().toISOString(), read_at: null, pending: true }
+  const temp = { id: `tmp-${++tmpId}`, sender_id: auth.user.id, body, kind, created_at: new Date().toISOString(), read_at: null, pending: true }
   thread.value.messages.push(temp) // affichage immédiat
-  draft.value = ''
-  resizeComposer()
+  if (kind === 'text') {
+    draft.value = ''
+    resizeComposer()
+  }
   scrollDown()
 
   try {
-    await api.post(`/conversations/${currentId.value}`, { body })
+    await api.post(`/conversations/${currentId.value}`, { body, kind })
     await Promise.all([loadThread({ forceScroll: true }), loadConversations()])
   } catch (e) {
     if (thread.value) thread.value.messages = thread.value.messages.filter((m) => m.id !== temp.id)
-    draft.value = body
+    if (kind === 'text') {
+      draft.value = body
+      resizeComposer()
+    }
     error.value = e.field('body') || e.message
-    resizeComposer()
   } finally {
     sending.value = false
-    composer.value?.focus()
+    if (!isTouch) composer.value?.focus()
   }
 }
 
+function send() {
+  const body = draft.value.trim()
+  if (!body) return
+  emojiOpen.value = false
+  submit(body, 'text')
+}
+
+function sendSticker(id) {
+  emojiOpen.value = false
+  submit(id, 'sticker')
+}
+
+/** Insère un emoji à l'endroit du curseur. */
+function insertEmoji(emoji) {
+  const el = composer.value
+  const start = el?.selectionStart ?? draft.value.length
+  const end = el?.selectionEnd ?? start
+  draft.value = (draft.value.slice(0, start) + emoji + draft.value.slice(end)).slice(0, 2000)
+  nextTick(() => {
+    if (el) {
+      const pos = Math.min(start + emoji.length, draft.value.length)
+      if (!isTouch) el.focus()
+      el.setSelectionRange(pos, pos)
+    }
+    resizeComposer()
+  })
+}
+
+/* ---------- Navigation, profil, blocage, suppression ---------- */
 function open(id) {
   filter.value = ''
   directory.value = []
@@ -184,7 +240,70 @@ function open(id) {
 }
 
 function closeChat() {
+  infoOpen.value = false
+  emojiOpen.value = false
   router.push('/messagerie')
+}
+
+async function openInfo() {
+  if (!currentId.value) return
+  infoOpen.value = true
+  infoLoading.value = true
+  infoError.value = ''
+  info.value = null
+  try {
+    info.value = await api.get(`/members/${currentId.value}`)
+  } catch (e) {
+    infoError.value = e.message
+  } finally {
+    infoLoading.value = false
+  }
+}
+
+async function toggleBlock() {
+  if (!info.value || busy.value) return
+  const blocking = !info.value.blocked_by_me
+  if (
+    blocking &&
+    !confirm(`Bloquer ${info.value.name} ?\n\nCe membre ne pourra plus vous écrire et ne verra plus quand vous êtes en ligne. Vous pourrez le débloquer à tout moment.`)
+  ) {
+    return
+  }
+  busy.value = true
+  infoError.value = ''
+  try {
+    if (blocking) await api.post(`/conversations/${currentId.value}/block`)
+    else await api.del(`/conversations/${currentId.value}/block`)
+    info.value.blocked_by_me = blocking
+    await Promise.all([loadThread(), loadConversations()])
+  } catch (e) {
+    infoError.value = e.message
+  } finally {
+    busy.value = false
+  }
+}
+
+async function unblockQuick() {
+  try {
+    await api.del(`/conversations/${currentId.value}/block`)
+    if (info.value) info.value.blocked_by_me = false
+    await Promise.all([loadThread(), loadConversations()])
+  } catch (e) {
+    error.value = e.message
+  }
+}
+
+async function removeChat(id, name) {
+  if (!confirm(`Supprimer la discussion avec ${name} ?\n\nElle sera supprimée pour vous seulement : l'autre membre garde la sienne.`)) return
+  error.value = ''
+  try {
+    await api.del(`/conversations/${id}`)
+    if (currentId.value === id) closeChat()
+    conversations.value = conversations.value.filter((c) => c.user.id !== id)
+    refreshUnread()
+  } catch (e) {
+    error.value = e.message
+  }
 }
 
 /* ---------- Menu du compte ---------- */
@@ -229,6 +348,8 @@ watch(currentId, async () => {
   error.value = ''
   thread.value = null
   draft.value = ''
+  infoOpen.value = false
+  emojiOpen.value = false
   resizeComposer()
   await loadThread({ forceScroll: true })
   loadConversations() // met à jour les pastilles « non lu » de la liste
@@ -295,22 +416,25 @@ onBeforeUnmount(() => {
         <div class="wa-list">
           <p v-if="error && !currentId" class="alert err" style="margin: 8px 12px">{{ error }}</p>
 
-          <button
-            v-for="c in filteredConversations" :key="c.user.id" type="button" class="wa-chat"
-            :class="{ active: c.user.id === currentId }" @click="open(c.user.id)"
-          >
-            <PresenceAvatar :name="c.user.name" :photo="c.user.photo_url" :online="c.user.online" :size="48" />
-            <span class="wa-chat-body">
-              <span class="wa-chat-top">
-                <b>{{ c.user.name }}</b>
-                <span class="wa-time" :class="{ unread: c.unread }">{{ listTime(c.last_message.created_at) }}</span>
+          <div v-for="c in filteredConversations" :key="c.user.id" class="wa-chat-item">
+            <button type="button" class="wa-chat" :class="{ active: c.user.id === currentId }" @click="open(c.user.id)">
+              <PresenceAvatar :name="c.user.name" :photo="c.user.photo_url" :online="c.user.online" :size="48" />
+              <span class="wa-chat-body">
+                <span class="wa-chat-top">
+                  <b>{{ c.user.name }}</b>
+                  <span class="wa-time" :class="{ unread: c.unread }">{{ listTime(c.last_message.created_at) }}</span>
+                </span>
+                <span class="wa-chat-bottom">
+                  <span class="wa-preview">{{ c.last_message.mine ? 'Vous : ' : '' }}{{ previewOf(c.last_message) }}</span>
+                  <span v-if="c.unread" class="wa-unread">{{ c.unread > 99 ? '99+' : c.unread }}</span>
+                </span>
               </span>
-              <span class="wa-chat-bottom">
-                <span class="wa-preview">{{ presenceText(c.user) || 'Démarrer une discussion' }}</span>
-                <span v-if="c.unread" class="wa-unread">{{ c.unread > 99 ? '99+' : c.unread }}</span>
-              </span>
-            </span>
-          </button>
+            </button>
+            <button
+              type="button" class="wa-chat-x" :aria-label="`Supprimer la discussion avec ${c.user.name}`"
+              title="Supprimer la discussion" @click.stop="removeChat(c.user.id, c.user.name)"
+            >×</button>
+          </div>
 
           <p v-if="!conversations.length && !filter.trim()" class="muted wa-empty">
             Aucune discussion pour le moment. Recherchez un membre pour lui écrire.
@@ -322,7 +446,7 @@ onBeforeUnmount(() => {
               <PresenceAvatar :name="u.name" :photo="u.photo_url" :online="u.online" :size="48" />
               <span class="wa-chat-body">
                 <span class="wa-chat-top"><b>{{ u.name }}</b></span>
-                <span class="wa-preview">{{ u.online ? 'En ligne' : 'Démarrer une discussion' }}</span>
+                <span class="wa-preview">{{ presenceText(u) || 'Démarrer une discussion' }}</span>
               </span>
             </button>
           </template>
@@ -330,7 +454,7 @@ onBeforeUnmount(() => {
         </div>
       </aside>
 
-      <!-- Volet droit : conversation -->
+      <!-- Volet central : conversation -->
       <section class="wa-main">
         <div v-if="!currentId" class="wa-welcome">
           <img src="/logo.jpg" alt="" />
@@ -345,11 +469,20 @@ onBeforeUnmount(() => {
                 <path d="M15 5l-7 7 7 7" />
               </svg>
             </button>
-            <PresenceAvatar :name="thread?.user.name" :photo="thread?.user.photo_url" :online="thread?.user.online" :size="42" />
-            <div class="wa-head-name">
-              <b>{{ thread?.user.name || '…' }}</b>
-              <span v-if="presenceText(thread?.user)" class="wa-status" :class="{ off: !thread.user.online }">{{ presenceText(thread?.user) }}</span>
-            </div>
+
+            <button type="button" class="wa-head-btn" title="Voir le profil du membre" @click="openInfo">
+              <PresenceAvatar :name="thread?.user.name" :photo="thread?.user.photo_url" :online="thread?.user.online" :size="42" />
+              <span class="wa-head-name">
+                <b>{{ thread?.user.name || '…' }}</b>
+                <span v-if="presenceText(thread?.user)" class="wa-status" :class="{ off: !thread.user.online }">{{ presenceText(thread?.user) }}</span>
+              </span>
+            </button>
+
+            <button type="button" class="wa-icon wa-close" aria-label="Fermer la discussion" title="Fermer la discussion" @click="closeChat">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
           </header>
 
           <p v-if="error" class="alert err wa-alert">{{ error }}</p>
@@ -360,8 +493,25 @@ onBeforeUnmount(() => {
 
             <template v-for="it in items" :key="it.key">
               <div v-if="it.type === 'day'" class="wa-day"><span>{{ it.label }}</span></div>
+
               <div v-else class="wa-row" :class="{ mine: it.mine }">
-                <div class="wa-bubble" :class="{ mine: it.mine, tail: it.first }">
+                <!-- Autocollant -->
+                <div v-if="it.msg.kind === 'sticker'" class="wa-sticker-wrap" :class="{ mine: it.mine }">
+                  <div class="wa-sticker">
+                    <span class="wa-sticker-emoji">{{ sticker(it.msg.body).emoji }}</span>
+                    <span class="wa-sticker-label">{{ sticker(it.msg.body).label }}</span>
+                  </div>
+                  <span class="wa-meta">
+                    {{ timeOf(it.msg.created_at) }}
+                    <span
+                      v-if="it.mine" class="wa-ticks" :class="{ read: it.msg.read_at, pending: it.msg.pending }"
+                      :title="it.msg.pending ? 'Envoi en cours' : it.msg.read_at ? 'Lu' : 'Envoyé'"
+                    >{{ it.msg.pending ? '…' : it.msg.read_at ? '✓✓' : '✓' }}</span>
+                  </span>
+                </div>
+
+                <!-- Message texte -->
+                <div v-else class="wa-bubble" :class="{ mine: it.mine, tail: it.first, big: isBigEmoji(it.msg.body) }">
                   <span v-if="it.msg.group_message_id" class="wa-tag">Message groupé</span>
                   <span class="prose">{{ it.msg.body }}</span>
                   <span class="wa-meta">
@@ -376,19 +526,76 @@ onBeforeUnmount(() => {
             </template>
           </div>
 
-          <form class="wa-composer" @submit.prevent="send">
-            <textarea
-              ref="composer" v-model="draft" rows="1" maxlength="2000" placeholder="Écrire un message"
-              aria-label="Votre message" @keydown="onComposerKey" @input="resizeComposer"
-            ></textarea>
-            <button class="wa-send" type="submit" :disabled="!draft.trim() || sending" aria-label="Envoyer">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
-                <polygon points="3.5,4 20.5,12 3.5,20 7.5,12" />
-              </svg>
-            </button>
-          </form>
+          <!-- Membre bloqué : on remplace la zone de saisie -->
+          <div v-if="thread?.blocked_by_me" class="wa-blocked">
+            <span>Vous avez bloqué ce membre.</span>
+            <button type="button" class="btn green small" @click="unblockQuick">Débloquer</button>
+          </div>
+
+          <template v-else>
+            <EmojiPanel v-if="emojiOpen" @pick="insertEmoji" @sticker="sendSticker" @close="emojiOpen = false" />
+
+            <form class="wa-composer" @submit.prevent="send">
+              <button
+                type="button" class="wa-icon wa-emoji-btn" :class="{ on: emojiOpen }" :aria-expanded="emojiOpen"
+                aria-label="Emojis et autocollants" title="Emojis et autocollants" @click="emojiOpen = !emojiOpen"
+              >
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" /><path d="M8.5 14c.9 1.3 2.1 2 3.5 2s2.6-.7 3.5-2" /><path d="M9 9.5h.01M15 9.5h.01" stroke-width="2.5" />
+                </svg>
+              </button>
+              <textarea
+                ref="composer" v-model="draft" rows="1" maxlength="2000" placeholder="Écrire un message"
+                aria-label="Votre message" @keydown="onComposerKey" @input="resizeComposer"
+              ></textarea>
+              <button class="wa-send" type="submit" :disabled="!draft.trim() || sending" aria-label="Envoyer">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+                  <polygon points="3.5,4 20.5,12 3.5,20 7.5,12" />
+                </svg>
+              </button>
+            </form>
+          </template>
         </template>
       </section>
+
+      <!-- Volet droit : profil du membre -->
+      <aside v-if="infoOpen && currentId" class="wa-info" aria-label="Profil du membre">
+        <div class="wa-info-head">
+          <button type="button" class="wa-icon" aria-label="Fermer le profil" @click="infoOpen = false">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+          <b>Profil du membre</b>
+        </div>
+
+        <p v-if="infoLoading" class="wa-note" style="margin: 16px">Chargement…</p>
+        <p v-else-if="infoError && !info" class="alert err" style="margin: 16px">{{ infoError }}</p>
+
+        <div v-else-if="info" class="wa-info-body">
+          <PresenceAvatar :name="info.name" :photo="info.photo_url" :online="info.online" :size="120" />
+          <h2>{{ info.name }}</h2>
+          <span v-if="presenceText(info)" class="wa-status" :class="{ off: !info.online }">{{ presenceText(info) }}</span>
+
+          <dl class="project-facts">
+            <template v-if="info.is_admin"><dt>Rôle</dt><dd>Administration de la mutuelle</dd></template>
+            <template v-else-if="info.mutuelle_role"><dt>Poste</dt><dd>{{ info.mutuelle_role }}</dd></template>
+            <template v-if="info.member_since"><dt>Membre depuis</dt><dd>{{ info.member_since }}</dd></template>
+          </dl>
+
+          <div class="wa-info-actions">
+            <p v-if="infoError" class="alert err">{{ infoError }}</p>
+            <p v-if="info.blocked_by_me" class="alert err">Vous avez bloqué ce membre.</p>
+
+            <button v-if="info.can_block" type="button" class="btn small" :class="info.blocked_by_me ? 'green' : 'danger'" :disabled="busy" @click="toggleBlock">
+              {{ info.blocked_by_me ? 'Débloquer ce membre' : 'Bloquer ce membre' }}
+            </button>
+            <p v-else class="muted" style="margin: 0">L'administration ne peut pas être bloquée.</p>
+
+            <button type="button" class="btn danger small" @click="removeChat(currentId, info.name)">Supprimer la discussion</button>
+          </div>
+        </div>
+      </aside>
     </div>
   </section>
 </template>

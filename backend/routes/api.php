@@ -75,6 +75,11 @@ Route::prefix('v1')->group(function () {
             Route::post('conversations/{user}', [ConversationController::class, 'store'])->middleware('throttle:30,1');
             Route::get('messages/unread-count', [ConversationController::class, 'unreadCount']);
 
+            Route::get('members/{user}', [ConversationController::class, 'profile']);
+            Route::delete('conversations/{user}', [ConversationController::class, 'destroy']);
+            Route::post('conversations/{user}/block', [ConversationController::class, 'block']);
+            Route::delete('conversations/{user}/block', [ConversationController::class, 'unblock']);
+
             // --- Administrateur ---
             Route::middleware('admin')->prefix('admin')->group(function () {
                 Route::get('stats', Admin\StatsController::class);

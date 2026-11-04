@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
+    /** Identifiants des autocollants autorisés. */
+    public const STICKERS = [
+        'bonjour', 'bravo', 'merci', 'felicitations', 'courage', 'solidarite',
+        'paix', 'rire', 'coeur', 'pouce', 'fete', 'kpouebo',
+    ];
+
     protected $fillable = ['body'];
 
     protected function casts(): array

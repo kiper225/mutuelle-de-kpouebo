@@ -13,9 +13,9 @@ export const site = {
   footerRealisation: 'Réalisé par GERVAIS KIPRE. Tous droits réservés.',
   president: {
     name: 'M. KONAN Bah Marcel',
-    role: 'Président du Comité ADHOC de la Mutuelle du RUMBO.',
-    message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure,',
-    photo: '',
+    role: 'Président du Comité AD-HOC de la Mutuelle du RUMBO.',
+    message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président du Comité AD-HOC de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure. Ensemble, nous avons accompli de grandes choses, et je suis convaincu que l\’avenir nous réserve encore de belles réussites. Je m\’engage à continuer à travailler avec détermination et transparence pour défendre vos intérêts, promouvoir le développement de notre village et renforcer les liens qui nous unissent. Merci de votre soutien indéfectible et de votre engagement envers notre mutuelle.',
+    photo: '../public/img/KONAN_Bah_Marcel.jpg',
   },
   axesIntro: 'Notre mutuelle s\’engage à promouvoir le développement de Kpouèbo à travers quatre principaux axes : l\’éducation et la culture, la santé et le bien-être, l\’économie et l\’emploi, ainsi que l\’environnement et la durabilité. Ces axes sont au cœur de nos actions et de nos projets, visant à améliorer la qualité de vie de nos membres et à renforcer la cohésion sociale au sein de notre communauté.',
   axes: [
@@ -40,12 +40,12 @@ export const site = {
     { icon: '🌱', title: 'Développement', text: 'Promouvoir le développement économique et social du village.' },
   ],
   bureau: [
-    { name: 'M. KONAN Bah Marcel', role: 'Président du Comité ADHOC du RUMBO.', quote: '[Citation ou message du membre du bureau.]', photo: '' },
-    { name: '[Nom Prénom 2]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
-    { name: '[Nom Prénom 3]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
-    { name: '[Nom Prénom 4]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
-    { name: '[Nom Prénom 5]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
-    { name: '[Nom Prénom 6]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '' },
+    { name: 'M. KONAN Bah Marcel', role: 'Président du Comité AD-HOC de la Mutuelle du RUMBO.', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/KONAN_Bah_Marcel.jpg' },
+    { name: '[Nom Prénom 2]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/default-profile.jpg' },
+    { name: '[Nom Prénom 3]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/default-profile.jpg' },
+    { name: '[Nom Prénom 4]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/default-profile.jpg' },
+    { name: '[Nom Prénom 5]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/default-profile.jpg' },
+    { name: '[Nom Prénom 6]', role: '[Fonction]', quote: '[Citation ou message du membre du bureau.]', photo: '../public/img/default-profile.jpg' },
   ],
   don: {
     intro: 'Pourquoi donner : à quels projets servent les dons.',
