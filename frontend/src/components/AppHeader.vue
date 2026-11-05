@@ -77,7 +77,7 @@ async function onLogout() {
     <header class="header">
       <div class="container">
         <RouterLink to="/" class="brand">
-          <img src="/logo.jpg" alt="Logo de la Mutuelle de Développement de Kpouèbo" />
+          <img src="/logo.jpg" alt="Logo de la Mutuelle pour le Développement de Kpouèbo" />
         </RouterLink>
         <button type="button" class="menu-toggle" :aria-expanded="mobileOpen" aria-controls="main-nav" aria-label="Menu" @click="mobileOpen = !mobileOpen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">

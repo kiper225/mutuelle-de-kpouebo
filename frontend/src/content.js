@@ -2,18 +2,18 @@
 // Images : placez les fichiers dans le dossier public/img puis indiquez leur chemin (ex. '/img/president.jpg').
 // Laissez '' pour afficher un emplacement vide.
 export const site = {
-  name: 'Mutuelle de Développement de Kpouèbo',
+  name: 'Mutuelle pour le Développement de Kpouèbo',
   slogan: 'Unir, dynamiser, développer Kpouèbo',
   hero: 'Une jeunesse au coeur du développement de son village.',
   heroImage: '/img/hero.jpg', // photo plein écran du village ou des membres
   about: 'notre mutuelle a pour objectif de rassembler les jeunes du village et de la diaspora afin de promouvoir le développement économique, social et culturel de Kpouèbo.',
   history: '[Histoire de la mutuelle : date de création, fondateurs, grandes étapes.]',
   videoUrl: 'https://www.youtube.com/watch?v=Aa5RJkpntAM', // lien d'intégration YouTube, ex. 'https://www.youtube.com/embed/XXXXXXXX'
-  footerText: '© 2026 Mutuelle de Développement de Kpouèbo.',
+  footerText: '© 2026 Mutuelle pour le Développement de Kpouèbo.',
   footerRealisation: 'Réalisé par GERVAIS KIPRE. Tous droits réservés.',
   president: {
     name: 'M. KONAN Bah Marcel',
-    role: 'Président du Comité AD-HOC de la Mutuelle du RUMBO.',
+    role: 'Président du Comité AD-HOC de la Mutuelle pour le Développement de Kpouèbo.',
     message: 'Chers membres, chers adhérents, chers collègues, c’est avec un grand plaisir et un profond sentiment de responsabilité que je m\'adresse à vous aujourd\'hui en ma qualité de Président du Comité AD-HOC de la mutuelle de Kpouèbo. Je tiens tout d\'abord à vous exprimer mes sincères remerciements pour votre confiance, votre engagement et votre participation active à la vie de notre mutuelle. C\’est grâce à la force de notre union et à notre esprit de solidarité que nous parvenons à relever les défis et à faire grandir notre structure. Ensemble, nous avons accompli de grandes choses, et je suis convaincu que l\’avenir nous réserve encore de belles réussites. Je m\’engage à continuer à travailler avec détermination et transparence pour défendre vos intérêts, promouvoir le développement de notre village et renforcer les liens qui nous unissent. Merci de votre soutien indéfectible et de votre engagement envers notre mutuelle.',
     photo: '../public/img/KONAN_Bah_Marcel.jpg',
   },
