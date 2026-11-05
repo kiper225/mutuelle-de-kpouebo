@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { auth, isLoggedIn, isAdmin, logout, refreshUnread } from '../auth'
 import { site } from '../content'
 import SearchBar from './SearchBar.vue'
+import NotificationBell from './NotificationBell.vue'
+import { notifState } from '../composables/notifications'
 
 const route = useRoute()
 const router = useRouter()
@@ -101,7 +103,7 @@ async function onLogout() {
           <RouterLink v-else-if="isLoggedIn" to="/espace" class="btn orange small">Mon espace</RouterLink>
           <RouterLink v-else to="/espace" class="btn orange small">Espace membres</RouterLink>
           <RouterLink to="/don" class="btn green small">Faire un don</RouterLink>
-
+          <NotificationBell v-if="isLoggedIn && !isAdmin" />
           <RouterLink
             v-if="isLoggedIn"
             to="/messagerie"
@@ -113,6 +115,7 @@ async function onLogout() {
               <rect x="3" y="5" width="18" height="14" rx="2" />
               <path d="M3 7l9 6 9-6" />
             </svg>
+            <span v-if="notifState.unread || auth.unread" class="dot" aria-hidden="true"></span>
             <span v-if="auth.unread" class="badge-count" aria-hidden="true">{{ auth.unread > 99 ? '99+' : auth.unread }}</span>
           </RouterLink>
 

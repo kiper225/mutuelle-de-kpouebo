@@ -20,4 +20,7 @@ return [
         // (ex. paiements.votre-mutuelle.ci). Si vide, un email devient obligatoire pour payer en ligne.
         'fallback_email_domain' => env('PAYSTACK_FALLBACK_EMAIL_DOMAIN'),
     ],
+
+    // Jours du mois où le rappel de cotisation est envoyé (séparés par des virgules dans .env).
+    'reminder_days' => array_map('intval', array_filter(explode(',', (string) env('MUTUELLE_REMINDER_DAYS', '1,15,25')))),
 ];

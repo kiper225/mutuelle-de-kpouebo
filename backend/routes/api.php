@@ -21,6 +21,7 @@ use App\Http\Controllers\GroupMessageController;
 use App\Http\Controllers\FundraiserController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PresenceController;
+use App\Http\Controllers\NotificationController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -67,6 +68,10 @@ Route::prefix('v1')->group(function () {
             Route::post('fundraisers/{fundraiser}/contribute', [FundraiserController::class, 'contribute'])->middleware('throttle:10,1');
 
             Route::post('presence', PresenceController::class)->middleware('throttle:30,1');
+
+            Route::get('notifications', [NotificationController::class, 'index']);
+            Route::post('notifications/read-all', [NotificationController::class, 'readAll']);
+            Route::post('notifications/{id}/read', [NotificationController::class, 'read']);
 
             // Messagerie entre membres
             Route::get('directory', [ConversationController::class, 'directory']);

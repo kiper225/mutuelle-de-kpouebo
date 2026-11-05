@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Fundraiser;
+use App\Models\Project;
+use App\Models\Publication;
+use App\Services\ContentNotifications;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        // Notifications : à chaque enregistrement, on vérifie si le contenu vient d'être mis en ligne.
+        Publication::saved(fn (Publication $p) => app(ContentNotifications::class)->publication($p));
+        Project::saved(fn (Project $p) => app(ContentNotifications::class)->project($p));
+        Fundraiser::saved(fn (Fundraiser $f) => app(ContentNotifications::class)->fundraiser($f));
     }
 
     /**

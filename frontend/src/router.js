@@ -14,6 +14,7 @@ const routes = [
   { path: '/connexion', component: () => import('./views/LoginView.vue'), meta: { guestOnly: true } },
   { path: '/espace', component: () => import('./views/MemberAreaView.vue'), meta: { requiresAuth: true } },
   { path: '/profil', component: () => import('./views/ProfileView.vue'), meta: { requiresAuth: true } },
+  { path: '/notifications', component: () => import('./views/NotificationsView.vue'), meta: { requiresAuth: true } },
   { path: '/messagerie', component: () => import('./views/MessagerieView.vue'), meta: { requiresAuth: true, layout: 'app' } },
   { path: '/imprimer/:type/:id', component: () => import('./views/PrintView.vue'), meta: { requiresAdmin: true } },
   { path: '/actualites/:slug', component: () => import('./views/NewsDetailView.vue'), meta: { noFooter: true } },
