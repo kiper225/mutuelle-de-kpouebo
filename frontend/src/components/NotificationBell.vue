@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { notifState, kindOf, timeAgo, markRead, markAllRead, enableBrowserNotifications, browserEnabled } from '../composables/notifications'
+import { notifState, alertState, kindOf, timeAgo, markRead, markAllRead, enableAlerts, disableAlerts } from '../composables/notifications'
 
 const router = useRouter()
 const open = ref(false)
 const root = ref(null)
-const canAskBrowser = 'Notification' in window && Notification.permission !== 'denied'
-const browserOn = ref(browserEnabled())
+
+const alertsActive = computed(() => alertState.permission === 'granted' && alertState.enabled)
 
 const onDocClick = (e) => {
   if (root.value && !root.value.contains(e.target)) open.value = false
@@ -28,10 +28,6 @@ function go(n) {
   open.value = false
   markRead(n)
   if (n.url) router.push(n.url)
-}
-
-async function enableBrowser() {
-  browserOn.value = await enableBrowserNotifications()
 }
 </script>
 
@@ -74,9 +70,19 @@ async function enableBrowser() {
 
       <RouterLink to="/notifications" class="notif-all" @click="open = false">Voir toutes les notifications</RouterLink>
 
-      <button v-if="canAskBrowser && !browserOn" type="button" class="btn outline-green small" style="width: 100%" @click="enableBrowser">
-        Activer les notifications du navigateur
-      </button>
+      <!-- Alertes du navigateur -->
+      <div v-if="alertState.supported" class="notif-alerts">
+        <p v-if="alertState.permission === 'denied'" class="muted" style="margin: 0">
+          Les alertes du navigateur sont bloquées. Pour les activer : cliquez sur le cadenas à gauche de l'adresse du site,
+          puis autorisez les notifications.
+        </p>
+        <button v-else-if="alertsActive" type="button" class="btn outline-green small" style="width: 100%" @click="disableAlerts">
+          Désactiver les alertes du navigateur
+        </button>
+        <button v-else type="button" class="btn orange small" style="width: 100%" @click="enableAlerts">
+          Activer les alertes du navigateur
+        </button>
+      </div>
     </div>
   </div>
 </template>

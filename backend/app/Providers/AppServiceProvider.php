@@ -24,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
             ? app(\App\Services\PaystackGateway::class)
             : app(\App\Services\NullPaymentGateway::class);
         });
+
+        $current = getenv('OPENSSL_CONF');
+
+        if (PHP_OS_FAMILY === 'Windows' && (! $current || ! is_file($current)) && is_file(base_path('openssl.cnf'))) {
+            putenv('OPENSSL_CONF='.base_path('openssl.cnf'));
+        }
     }
 
     /**

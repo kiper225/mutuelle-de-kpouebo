@@ -12,63 +12,127 @@ export const KINDS = {
 export const kindOf = (n) => KINDS[n.kind] || { icon: '🔔', label: 'Notification' }
 
 export const notifState = reactive({ items: [], unread: 0, messages: { unread: 0, latest: null } })
-export const toasts = reactive([]) // bulles d'alerte affichées à l'écran
+export const toasts = reactive([]) // bulles dans la page : repli quand les alertes du navigateur ne sont pas disponibles
 
 const REFRESH_EVERY = 30000
-const BROWSER_KEY = 'kp_browser_notifs'
+const ALERTS_KEY = 'kp_browser_notifs' // « 0 » : alertes désactivées par le membre
 let timer = null
-let known = null // notifications déjà vues (null avant le premier chargement : pas de bulles pour l'existant)
+let known = null // notifications déjà vues (null avant le premier chargement : pas d'alerte pour l'existant)
 let lastMessageId = 0
 let toastId = 0
+let workerListening = false
 
-/* ---------- Bulles d'alerte ---------- */
+/* ---------- Bulles dans la page (repli) ---------- */
 export function dismissToast(id) {
   const index = toasts.findIndex((t) => t.id === id)
   if (index >= 0) toasts.splice(index, 1)
 }
 
-function pushToast(toast) {
+export function pushToast(toast) {
   const id = ++toastId
   toasts.push({ id, ...toast })
   setTimeout(() => dismissToast(id), 7000)
 }
 
-/* ---------- Notifications du navigateur (facultatives) ---------- */
-export function browserEnabled() {
+/* ---------- Alertes du navigateur ---------- */
+const supported = typeof window !== 'undefined' && 'Notification' in window
+
+const readFlag = () => {
   try {
-    return localStorage.getItem(BROWSER_KEY) === '1' && 'Notification' in window && Notification.permission === 'granted'
+    return localStorage.getItem(ALERTS_KEY)
+  } catch {
+    return null
+  }
+}
+const writeFlag = (value) => {
+  try {
+    localStorage.setItem(ALERTS_KEY, value)
+  } catch {
+    /* stockage indisponible */
+  }
+}
+
+export const alertState = reactive({
+  supported,
+  permission: supported ? Notification.permission : 'unsupported', // default | granted | denied
+  enabled: readFlag() !== '0',
+})
+
+function syncAlertState() {
+  if (!supported) return
+  alertState.permission = Notification.permission
+  alertState.enabled = readFlag() !== '0'
+}
+
+const alertsOn = () => supported && Notification.permission === 'granted' && readFlag() !== '0'
+
+/** Sur mobile, seules les alertes passant par le service worker fonctionnent. */
+async function workerRegistration() {
+  if (!('serviceWorker' in navigator)) return null
+  try {
+    return await Promise.race([navigator.serviceWorker.ready, new Promise((resolve) => setTimeout(() => resolve(null), 1500))])
+  } catch {
+    return null
+  }
+}
+
+async function showAlert({ title, body, to, tag }) {
+  const options = { body, icon: '/logo.jpg', badge: '/logo.jpg', tag, data: { url: to || '/' } }
+  try {
+    const registration = await workerRegistration()
+    if (registration) {
+      await registration.showNotification(title, options)
+      return true
+    }
+    const n = new Notification(title, options)
+    n.onclick = () => {
+      window.focus()
+      if (to) router.push(to)
+      n.close()
+    }
+    return true
   } catch {
     return false
   }
 }
 
-export async function enableBrowserNotifications() {
-  if (!('Notification' in window)) return false
-  const result = await Notification.requestPermission()
-  try {
-    localStorage.setItem(BROWSER_KEY, result === 'granted' ? '1' : '0')
-  } catch {
-    /* stockage indisponible */
+/** Demande l'autorisation au navigateur (si besoin) et active les alertes. Retourne « granted », « denied » ou « default ». */
+export async function enableAlerts() {
+  if (!supported) return 'unsupported'
+  let permission = Notification.permission
+  if (permission === 'default') permission = await Notification.requestPermission()
+  if (permission === 'granted') {
+    writeFlag('1')
+    syncAlertState()
+    await showAlert({ title: 'Alertes activées', body: 'Vous serez prévenu des nouvelles informations, messages et rappels.', to: '/', tag: 'alerts-on' })
   }
-  return result === 'granted'
+  syncAlertState()
+  return permission
 }
 
-/** Onglet en arrière-plan : notification du navigateur ; sinon : bulle dans la page. */
-function announce({ icon, title, body, to, tag }) {
-  if (document.hidden && browserEnabled()) {
-    try {
-      const n = new Notification(title, { body, icon: '/logo.jpg', tag })
-      n.onclick = () => {
-        window.focus()
-        if (to) router.push(to)
-        n.close()
-      }
-      return
-    } catch {
-      /* on retombe sur la bulle */
-    }
-  }
+export function disableAlerts() {
+  writeFlag('0')
+  syncAlertState()
+}
+
+/** Alerte du navigateur si elles sont activées ; sinon bulle dans la page. */
+async function announce({ icon, title, body, to, tag }) {
+  if (alertsOn() && (await showAlert({ title, body, to, tag }))) return
   pushToast({ icon, title, body, to })
+}
+
+function registerWorker() {
+  if (!('serviceWorker' in navigator)) return
+  navigator.serviceWorker.register('/sw.js').catch(() => {
+    /* sans service worker, on utilise les alertes classiques */
+  })
+  if (!workerListening) {
+    workerListening = true
+    // Un clic sur une alerte demande au site déjà ouvert d'aller à la bonne page.
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'navigate' && event.data.url) router.push(event.data.url)
+    })
+  }
 }
 
 function viewingChat(senderId) {
@@ -79,6 +143,7 @@ function viewingChat(senderId) {
 /* ---------- Chargement ---------- */
 export async function refreshNotifications() {
   try {
+    syncAlertState()
     const res = await api.get('/notifications')
     const baseline = known === null
     const fresh = baseline ? [] : res.items.filter((n) => !n.read && !known.has(n.id))
@@ -88,8 +153,12 @@ export async function refreshNotifications() {
     notifState.messages = res.messages
     known = new Set(res.items.map((n) => n.id))
 
-    for (const n of fresh.slice(0, 3)) {
-      announce({ icon: kindOf(n).icon, title: n.title, body: n.body, to: n.url, tag: n.id })
+    if (fresh.length > 3) {
+      await announce({ icon: '🔔', title: `${fresh.length} nouvelles notifications`, body: 'Cliquez pour les consulter.', to: '/notifications', tag: 'many' })
+    } else {
+      for (const n of fresh) {
+        await announce({ icon: kindOf(n).icon, title: n.title, body: n.body, to: n.url, tag: n.id })
+      }
     }
 
     const m = res.messages.latest
@@ -98,7 +167,7 @@ export async function refreshNotifications() {
     } else if (m && m.id > lastMessageId) {
       lastMessageId = m.id
       if (!viewingChat(m.sender_id)) {
-        announce({ icon: '💬', title: m.name, body: m.preview, to: `/messagerie?avec=${m.sender_id}`, tag: `msg-${m.id}` })
+        await announce({ icon: '💬', title: m.name, body: m.preview, to: `/messagerie?avec=${m.sender_id}`, tag: `msg-${m.id}` })
       }
     }
   } catch {
@@ -112,10 +181,11 @@ const onVisible = () => {
 
 export function startNotifications() {
   stopNotifications()
+  syncAlertState()
+  registerWorker()
   refreshNotifications()
-  timer = setInterval(() => {
-    if (document.visibilityState === 'visible') refreshNotifications()
-  }, REFRESH_EVERY)
+  // Le rafraîchissement continue quand l'onglet est masqué : c'est là que l'alerte du navigateur est utile.
+  timer = setInterval(refreshNotifications, REFRESH_EVERY)
   document.addEventListener('visibilitychange', onVisible)
 }
 
