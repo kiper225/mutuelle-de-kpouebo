@@ -107,4 +107,11 @@ export const site = {
       { name: 'CLAUDETTE HOUNKPE', role: 'Membre du bureau', text: '[Quelques mots sur son parcours et sur ce qu’elle a apporté à Kpouèbo.]', photo: '../public/img/hounkpe.jpg' },
     ],
   },
+
+    // Déclaration d'adhésion (2ème partie de la fiche). {association} est remplacé par le nom de la mutuelle.
+  declaration: {
+    adhesion: "Déclare solliciter mon adhésion à la {association}.",
+    statuts:
+      "Je déclare avoir reçu un exemplaire des statut (et éventuellement du règlement intérieur) de l'association, dont j'ai pu prendre connaissance. Je déclare m'engager à respecter toutes les obligations des membres de l'association qui y figurent. Je déclare avoir été également informé des dispositions de l'article 2 en son point 2-1 de la loi n°2 qui réglemente le droit de communication dans le fichier des membres de l'association des données personnelle me concernant.",
+  },
 }

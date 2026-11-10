@@ -677,7 +677,7 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 .bd-content { position: absolute; inset: 0; z-index: 10; padding: 3cqw; display: flex; flex-direction: column; justify-content: space-between; color: var(--ink); line-height: 1.2; }
 .bd-head { display: flex; align-items: center; gap: 2.4cqw; padding-right: 22cqw; }
 .bd-logo { width: 15cqw; height: 15cqw; flex: none; border-radius: 50%; object-fit: contain; background: #fff; }
-.bd-name { font-size: 4cqw; font-weight: 800; text-transform: uppercase; line-height: 1.15; text-align:center; }
+.bd-name { font-size: 4cqw; font-weight: 800; text-transform: uppercase; line-height: 1.15; text-align:center; color: var(--green-dark);}
 .bd-band { background: #c2610a; clip-path: polygon(0 0, 96% 0, 91% 100%, 0 100%); width: 100%; margin-left: -3cqw; margin-bottom: 1.5cqw; padding: 1.1cqw 3cqw 1.1cqw 15cqw; color: #fff; font-size: 4.5cqw; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .bd-main { display: flex; gap: 2cqw; align-items: flex-start; }
 .bd-info { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: .6cqw; }
@@ -692,9 +692,9 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 .bd-sign-text { height: 5cqw; line-height: 5cqw; font-family: 'Caveat', cursive; font-size: 4.2cqw; font-weight: 700; white-space: nowrap; overflow: hidden; }
 .bd-sign-line { width: 80%; margin: .3cqw auto; border-top: .25cqw solid #8a9a8f; }
 .bd-sign-title { font-size: 1.7cqw; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: #333; }
-.bd-foot { border-top: .2cqw solid rgba(0, 0, 0, .15);  }
+.bd-foot { border-top: .2cqw solid rgba(0, 0, 0, .15);  padding-top: .6cqw;}
 .bd-date { font-size: 2.1cqw; font-weight: 700; }
-.bd-notice { margin: .3cqw 0 0; font-size: 1.7cqw; font-weight: 600; text-align: center; text-transform: uppercase; color: var(--muted); line-height: 1.1; }
+.bd-notice { margin: .3cqw 0 0; font-size: 1.7cqw; font-weight: 600; text-align: center; text-transform: uppercase; color: black; line-height: 1.1; }
 
 /* Verso */
 .bd-back { display: flex; flex-direction: column; gap: 1.6cqw; padding-right: 22cqw; }
@@ -813,3 +813,51 @@ th { border-top: 0; color: var(--muted); font-weight: 600; }
 /* Point sur le bouton menu (téléphone) */
 .menu-toggle { position: relative; }
 .menu-toggle .dot { position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--orange); border: 2px solid #fff; }
+
+/* Demande d'autorisation des alertes du navigateur */
+.alert-prompt { position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 16px); transform: translateX(-50%); z-index: 310; width: min(460px, calc(100vw - 24px)); display: flex; gap: 12px; padding: 16px; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--orange); border-radius: 12px; box-shadow: 0 12px 32px rgba(0, 0, 0, .2); }
+.alert-prompt-icon { font-size: 28px; line-height: 1; }
+.alert-prompt p { margin: 4px 0 12px; font-size: 14px; color: var(--muted); }
+.notif-alerts { padding: 8px 4px 2px; }
+
+/* ===== Fiche d'adhésion (A4, 2 pages) ===== */
+.fa-edit { margin-bottom: 8mm; }
+.fa-page { width: 190mm; max-width: 100%; margin: 0 auto 8mm; padding: 8mm 10mm; background: #fff; color: #000; font-size: 10.5pt; line-height: 1.4; box-shadow: 0 2px 12px rgba(0, 0, 0, .12); }
+@media screen { .fa-page { overflow-x: auto; } }
+
+.fa-head { display: grid; grid-template-columns: 24mm 1fr 24mm; gap: 4mm; align-items: center; padding-bottom: 2mm; border-bottom: .3mm solid var(--green); }
+.fa-logo { width: 24mm; height: 24mm; object-fit: contain; }
+.fa-org { text-align: center; }
+.fa-org h1 { margin: 0 0 1mm; font-size: 16pt; font-weight: 700; line-height: 1.1; color: var(--green-dark); text-transform: uppercase; }
+.fa-org p { margin: 0; font-size: 8.5pt; color: #333; }
+.fa-meta { display: flex; justify-content: space-between; gap: 6mm; padding: 1.5mm 0 3mm; font-size: 9pt; }
+.fa-banner { padding: 3mm; background: var(--orange); color: var(--ink); text-align: center; font-size: 15pt; font-weight: 700; text-transform: uppercase; }
+
+.fa-id { display: grid; grid-template-columns: 30mm 1fr 30mm; gap: 4mm; align-items: center; margin: 5mm 0 3mm; padding-bottom: 4mm; border-bottom: .3mm solid var(--green); }
+.fa-qr { width: 26mm; height: 26mm; }
+.fa-matricule { text-align: center; font-size: 15pt; font-weight: 700; color: var(--danger); }
+.fa-photo { width: 28mm; height: 35mm; justify-self: end; object-fit: cover; border: .3mm solid #999; }
+.fa-photo.empty { display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #555; }
+
+.fa-section { margin: 5mm 0 2mm; padding-bottom: 1mm; border-bottom: .3mm solid var(--green); font-size: 11pt; font-weight: 600; text-transform: uppercase; }
+.fa-list { display: grid; grid-template-columns: 58mm 1fr; gap: 2mm 4mm; margin: 0 0 0 2mm; font-size: 10pt; }
+.fa-list dt { font-weight: 500; }
+.fa-list dd { margin: 0; font-weight: 700; text-transform: uppercase; overflow-wrap: anywhere; }
+.fa-list dd.lower { text-transform: none; }
+
+.fa-sign { display: flex; justify-content: flex-end; margin-top: 10mm; }
+.fa-sign-box { display: flex; flex-direction: column; gap: 1mm; width: 80mm; min-height: 32mm; padding: 2.5mm; border: .3mm solid #000; font-size: 9pt; }
+
+/* 2ème partie : déclaration */
+.fa-part { margin: 6mm 0 4mm; font-size: 13pt; font-weight: 700; text-transform: uppercase; }
+.fa-part small { font-size: 10pt; font-weight: 500; text-transform: none; }
+.fa-decl { margin: 0 0 4mm; font-size: 10.5pt; line-height: 2.1; text-align: justify; }
+.fa-fill { display: inline-block; min-width: 30mm; padding: 0 1mm; border-bottom: .3mm dotted #000; font-weight: 700; line-height: 1.3; vertical-align: bottom; }
+.fa-fill.wide { min-width: 85mm; }
+.fa-fait { margin-top: 8mm; }
+
+@page { size: A4; margin: 10mm; }
+@media print {
+  .fa-page { width: auto; max-width: none; margin: 0; padding: 0; overflow: visible; box-shadow: none; break-inside: avoid; }
+  .fa-page + .fa-page { break-before: page; }
+}
