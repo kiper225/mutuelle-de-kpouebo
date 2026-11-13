@@ -6,6 +6,7 @@ import AppFooter from './components/AppFooter.vue'
 import { isLoggedIn } from './auth'
 import { startNotifications, stopNotifications } from './composables/notifications'
 import ToastHost from './components/ToastHost.vue'
+import AlertPrompt from './components/AlertPrompt.vue'
 
 // Les notifications sont rafraîchies tant qu'un membre est connecté.
 watch(isLoggedIn, (on) => (on ? startNotifications() : stopNotifications()), { immediate: true })
@@ -28,5 +29,6 @@ const noFooter = computed(() => route.matched.some((r) => r.meta.noFooter))
       <AppFooter v-if="!noFooter" />
     </div>
     <ToastHost />
+    <AlertPrompt />
   </div>
 </template>

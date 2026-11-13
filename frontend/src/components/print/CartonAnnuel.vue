@@ -10,12 +10,15 @@ defineProps({
 
 <template>
   <section class="doc-page">
-    <header class="doc-head">
-      <img src="/logo.jpg" alt="Logo" />
-      <div>
+    <header class="fa-head">
+      <img src="/logo.jpg" alt="" class="fa-logo" />
+      <div class="fa-org">
         <h1>{{ site.name }}</h1>
-        <div>{{ site.contact.address }}</div>
+        <p>E-mail : {{ site.contact.email }}</p>
+        <p>Contact : {{ site.contact.phone }}</p>
+        <p v-if="site.contact.address">{{ site.contact.address }}</p>
       </div>
+      <img src="/logo.jpg" alt="" class="fa-logo" />
     </header>
 
     <div class="doc-title">CARTON ANNUEL DE COTISATION {{ year }}</div>
