@@ -2,17 +2,18 @@
 import { ref, reactive, computed } from 'vue'
 import { site } from '../../content'
 import { GENDER, formatDateShort } from '../../utils'
+import { labels, intlLocale } from '../../i18n'
 
 const props = defineProps({ member: { type: Object, required: true } })
 
 // Réglages modifiables avant l'impression (valeurs par défaut reprises de content.js)
-const issueDate = ref(new Date().toLocaleDateString('fr-FR'))
+const issueDate = ref(new Date().toLocaleDateString(intlLocale()))
 const signerName = ref(site.signataire.name)
 const signerTitle = ref(site.signataire.role)
 const signatureText = ref('') // vide : on laisse la place pour une signature à la main
 
 function resetOptions() {
-  issueDate.value = new Date().toLocaleDateString('fr-FR')
+  issueDate.value = new Date().toLocaleDateString(intlLocale())
   signerName.value = site.signataire.name
   signerTitle.value = site.signataire.role
   signatureText.value = ''

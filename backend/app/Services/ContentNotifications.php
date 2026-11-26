@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Fundraiser;
 use App\Models\Project;
 use App\Models\Publication;
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,18 +26,18 @@ class ContentNotifications
 
         $category = Str::lower((string) $pub->category);
 
-        [$kind, $label] = match (true) {
-            str_contains($category, 'communi') => ['communique', 'Nouveau communiqué'],
+        $kind = match (true) {
+            str_contains($category, 'communi') => 'communique',
             str_contains($category, 'projet'),
             str_contains($category, 'realis'),
             str_contains($category, 'activ'),
             str_contains($category, 'event'),
-            str_contains($category, 'evenement') => ['activity', 'Nouvelle activité'],
-            default => ['publication', 'Nouvelle information'],
+            str_contains($category, 'evenement') => 'activity',
+            default => 'publication',
         };
 
         // Si votre page de détail utilise l'identifiant au lieu du « slug », remplacez $pub->slug par $pub->getKey().
-        $this->send($pub, $kind, "{$label} : {$pub->title}", $this->excerpt($pub->excerpt ?? $pub->body ?? ''), '/actualites/'.$pub->slug);
+        $this->send($pub, $kind, $this->headline($kind, (string) $pub->title), $this->excerpt($pub->excerpt ?? $pub->body ?? ''), '/actualites/'.$pub->slug);
     }
 
     public function project(Project $project): void
@@ -45,7 +46,7 @@ class ContentNotifications
             return;
         }
 
-        $this->send($project, 'activity', 'Nouvelle activité : '.$project->title, $this->excerpt($project->summary ?? ''), '/chantiers/'.$project->getKey());
+        $this->send($project, 'activity', $this->headline('activity', (string) $project->title), $this->excerpt($project->summary ?? ''), '/chantiers/'.$project->getKey());
     }
 
     public function fundraiser(Fundraiser $fundraiser): void
@@ -54,10 +55,19 @@ class ContentNotifications
             return;
         }
 
-        $this->send($fundraiser, 'collecte', 'Nouvelle levée de fonds : '.$fundraiser->title, $this->excerpt($fundraiser->summary ?? ''), '/collectes/'.$fundraiser->getKey());
+        $this->send($fundraiser, 'collecte', $this->headline('collecte', (string) $fundraiser->title), $this->excerpt($fundraiser->summary ?? ''), '/collectes/'.$fundraiser->getKey());
     }
 
-    private function send(Model $model, string $kind, string $title, string $body, string $url): void
+    /** Titre dans la langue du destinataire : « Nouveau communiqué : … » ou « New announcement: … ». */
+    private function headline(string $kind, string $title): Closure
+    {
+        return fn (string $locale) => __('notifications.titled', [
+            'label' => __("notifications.{$kind}", [], $locale),
+            'title' => $title,
+        ], $locale);
+    }
+
+    private function send(Model $model, string $kind, Closure $title, string $body, string $url): void
     {
         // On marque le contenu et on crée les notifications ensemble : tout ou rien.
         DB::transaction(function () use ($model, $kind, $title, $body, $url) {

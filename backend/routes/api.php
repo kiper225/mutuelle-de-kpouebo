@@ -22,6 +22,7 @@ use App\Http\Controllers\FundraiserController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\LocaleController;
 
 Route::prefix('v1')->group(function () {
     // --- Public ---
@@ -84,6 +85,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('conversations/{user}', [ConversationController::class, 'destroy']);
             Route::post('conversations/{user}/block', [ConversationController::class, 'block']);
             Route::delete('conversations/{user}/block', [ConversationController::class, 'unblock']);
+
+            Route::post('me/locale', [LocaleController::class, 'update']);
 
             // --- Administrateur ---
             Route::middleware('admin')->prefix('admin')->group(function () {

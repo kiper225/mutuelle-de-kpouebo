@@ -4,6 +4,7 @@ import { api } from '../api'
 import { auth, isLoggedIn, isAdmin } from '../auth'
 import { site } from '../content'
 import { categoryLabel, timeAgo } from '../utils'
+import { labels, intlLocale } from './i18n'
 
 const props = defineProps({
   pub: { type: Object, required: true },
@@ -153,7 +154,7 @@ onMounted(() => {
       <div>
         <RouterLink :to="detailLink" class="fb-page-name">{{ site.name }}</RouterLink>
         <div class="fb-sub">
-          <span :title="new Date(pub.published_at).toLocaleString('fr-FR')">{{ timeAgo(pub.published_at) }}</span>
+          <span :title="new Date(pub.published_at).toLocaleString(intlLocale())">{{ timeAgo(pub.published_at) }}</span>
           · {{ categoryLabel(pub.category) }} ·
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" />

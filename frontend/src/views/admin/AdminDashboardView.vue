@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { api } from '../../api'
 import { formatMoney, formatDateShort, currentPeriod } from '../../utils'
 import BarChart from '../../components/BarChart.vue'
+import { intlLocale } from '../../i18n'
 
 const SOURCES = [
   { key: 'cotisations', label: 'Cotisations' },
@@ -17,7 +18,7 @@ const income = ref(null)
 const period = ref(currentPeriod())
 const error = ref('')
 
-const nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
+const nf = new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 1 })
 const last = (arr) => arr?.[arr.length - 1] ?? 0
 const prev = (arr) => arr?.[arr.length - 2] ?? 0
 const sum = (arr) => (arr || []).reduce((a, b) => a + b, 0)

@@ -1,7 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { isLoggedIn } from '../auth'
 import { alertState, enableAlerts, pushToast } from '../composables/notifications'
+
+const { t } = useI18n()
 
 const LATER_KEY = 'kp_alerts_later'
 const LATER_DAYS = 3
@@ -16,16 +19,16 @@ function recentlyPostponed() {
 }
 
 const postponed = ref(recentlyPostponed())
-const visible = computed(() => isLoggedIn.value && alertState.supported && alertState.permission === 'default' && !postponed.value)
+
+// Affiché tant que le membre n'a pas fait de choix.
+const visible = computed(
+  () => isLoggedIn.value && alertState.supported && alertState.permission !== 'denied' && !alertState.chosen && !postponed.value,
+)
 
 async function accept() {
   const permission = await enableAlerts()
   if (permission === 'denied') {
-    pushToast({
-      icon: '🔕',
-      title: 'Alertes refusées',
-      body: "Pour les activer : cliquez sur le cadenas à gauche de l'adresse du site, puis autorisez les notifications.",
-    })
+    pushToast({ icon: '🔕', title: t('alerts.deniedTitle'), body: t('alerts.deniedBody') })
   }
 }
 
@@ -40,16 +43,14 @@ function later() {
 </script>
 
 <template>
-  <div v-if="visible" class="alert-prompt" role="dialog" aria-label="Activer les alertes du navigateur">
+  <div v-if="visible" class="alert-prompt" role="dialog" :aria-label="$t('alerts.promptTitle')">
     <span class="alert-prompt-icon" aria-hidden="true">🔔</span>
     <div>
-      <b>Activer les alertes du navigateur ?</b>
-      <p>
-        Soyez prévenu dès qu'une information, un message ou un rappel de cotisation arrive, même quand le site est dans un autre onglet.
-      </p>
+      <b>{{ $t('alerts.promptTitle') }}</b>
+      <p>{{ $t('alerts.promptText') }}</p>
       <div class="actions">
-        <button type="button" class="btn orange small" @click="accept">Activer</button>
-        <button type="button" class="btn outline-green small" @click="later">Plus tard</button>
+        <button type="button" class="btn orange small" @click="accept">{{ $t('alerts.enable') }}</button>
+        <button type="button" class="btn outline-green small" @click="later">{{ $t('alerts.later') }}</button>
       </div>
     </div>
   </div>

@@ -6,6 +6,7 @@ import { auth, isAdmin, logout, refreshUnread } from '../auth'
 import { STICKERS } from '../stickers'
 import PresenceAvatar from '../components/PresenceAvatar.vue'
 import EmojiPanel from '../components/EmojiPanel.vue'
+import { intlLocale } from '../i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,7 +41,7 @@ const isTouch = window.matchMedia('(pointer: coarse)').matches
 /* ---------- Utilitaires d'affichage ---------- */
 const initial = (name) => String(name || '?').trim().charAt(0).toUpperCase()
 const normalize = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-const timeOf = (iso) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+const timeOf = (iso) => new Date(iso).toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' })
 const sameDay = (a, b) => a.toDateString() === b.toDateString()
 const sticker = (id) => STICKERS[id] || { emoji: '❔', label: '' }
 
@@ -51,7 +52,7 @@ function dayLabel(iso) {
   yesterday.setDate(now.getDate() - 1)
   if (sameDay(d, now)) return "Aujourd'hui"
   if (sameDay(d, yesterday)) return 'Hier'
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  return d.toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function listTime(iso) {
@@ -61,7 +62,7 @@ function listTime(iso) {
   yesterday.setDate(now.getDate() - 1)
   if (sameDay(d, now)) return timeOf(iso)
   if (sameDay(d, yesterday)) return 'Hier'
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  return d.toLocaleDateString(intlLocale(), { day: '2-digit', month: '2-digit', year: '2-digit' })
 }
 
 /** « En ligne », « Actif il y a 5 min » ou « Actif il y a 3 h » (vide si le membre n'a pas été actif depuis 24 h ou masque son statut). */

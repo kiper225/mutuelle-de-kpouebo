@@ -43,8 +43,8 @@ class SendCotisationReminders extends Command
 
         $count = $notifier->broadcast(
             'cotisation_reminder',
-            'Rappel de cotisation',
-            "Votre cotisation de {$month} n'est pas encore réglée. Vous pouvez payer en ligne en quelques clics.",
+            fn (string $locale) => __('notifications.reminder_title', [], $locale),
+            fn (string $locale) => __('notifications.reminder_body', ['month' => $today->copy()->locale($locale)->translatedFormat('F Y')], $locale),
             '/espace',
             $ids,
             ['key' => $key],

@@ -1,3 +1,5 @@
+import { i18n } from './i18n'
+
 const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '')
 const TOKEN_KEY = 'mutuelle_token'
 
@@ -34,6 +36,7 @@ async function request(method, path, { body, query } = {}) {
   const headers = { Accept: 'application/json' }
   const token = tokenStore.get()
   if (token) headers.Authorization = `Bearer ${token}`
+  headers['Accept-Language'] = i18n.global.locale.value
 
   const options = { method, headers }
   if (body instanceof FormData) {

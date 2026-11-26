@@ -11,6 +11,7 @@ use App\Models\Fundraiser;
 use App\Models\Project;
 use App\Models\Publication;
 use App\Services\ContentNotifications;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
         Publication::saved(fn (Publication $p) => app(ContentNotifications::class)->publication($p));
         Project::saved(fn (Project $p) => app(ContentNotifications::class)->project($p));
         Fundraiser::saved(fn (Fundraiser $f) => app(ContentNotifications::class)->fundraiser($f));
+
+        User::creating(function (User $user) {
+            $user->locale ??= app()->runningInConsole() ? 'fr' : app()->getLocale();
+        });
     }
 
     /**
@@ -65,4 +70,5 @@ class AppServiceProvider extends ServiceProvider
             : null,
         );
     }
+
 }

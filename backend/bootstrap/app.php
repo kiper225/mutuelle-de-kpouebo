@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin'  => \App\Http\Middleware\EnsureAdmin::class,
             'active' => \App\Http\Middleware\EnsureActiveMember::class,
         ]);
+        $middleware->api(append: [
+            \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\TranslateApiMessages::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

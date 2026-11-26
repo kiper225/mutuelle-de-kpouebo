@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { auth, logout, refreshUnread } from '../auth'
 import AdminIcon from '../components/AdminIcon.vue'
+import { intlLocale } from '../i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,7 +54,7 @@ const groups = [
 
 const title = computed(() => route.meta.title || 'Administration')
 const subtitle = computed(() => route.meta.subtitle || '')
-const month = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+const month = new Date().toLocaleDateString(intlLocale(), { month: 'long', year: 'numeric' })
 const initial = computed(() => (auth.user?.first_names || auth.user?.name || '?').charAt(0).toUpperCase())
 
 const isActive = (item) => (item.exact ? route.path === item.to : route.path.startsWith(item.to))

@@ -4,6 +4,7 @@ import { api } from '../../api'
 import { auth } from '../../auth'
 import { formatDate } from '../../utils'
 import Pager from '../../components/Pager.vue'
+import { intlLocale } from '../../i18n'
 
 const AUDIENCES = { all: 'Tous les membres actifs', overdue: 'Membres en retard de cotisation', selected: 'Membres choisis' }
 const MAX = 2000
@@ -28,7 +29,7 @@ const recipients = computed(() => (audience.value === 'selected' ? selected.valu
 const canSend = computed(() => body.value.trim().length > 0 && (recipients.value ?? 0) > 0 && !sending.value)
 
 const isSelected = (id) => selected.value.some((m) => m.id === id)
-const when = (iso) => `${formatDate(iso)} à ${new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+const when = (iso) => `${formatDate(iso)} à ${new Date(iso).toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' })}`
 
 async function loadCounts() {
   try {

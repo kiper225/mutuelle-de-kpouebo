@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import QRCode from 'qrcode'
 import { site } from '../../content'
 import { GENDER, MARITAL_STATUS, formatDateShort } from '../../utils'
+import { labels, intlLocale } from '../../i18n'
 
 const props = defineProps({ member: { type: Object, required: true } })
 
@@ -10,7 +11,7 @@ const props = defineProps({ member: { type: Object, required: true } })
 const prefill = ref(false)
 
 const now = new Date()
-const printedAt = `${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+const printedAt = `${now.toLocaleDateString(intlLocale())} à ${now.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' })}`
 
 const fullName = computed(() => [props.member.last_name, props.member.first_names].filter(Boolean).join(' '))
 const matricule = computed(() => props.member.member_number || 'NON ATTRIBUÉ')

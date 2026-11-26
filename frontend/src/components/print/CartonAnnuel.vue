@@ -1,6 +1,8 @@
 <script setup>
 import { site } from '../../content'
 import { MONTHS } from '../../utils'
+import { labels, intlLocale } from '../../i18n'
+
 
 defineProps({
   member: { type: Object, required: true },

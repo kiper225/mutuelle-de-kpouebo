@@ -1,5 +1,6 @@
 import { reactive, computed } from 'vue'
 import { api, tokenStore, setUnauthorizedHandler } from './api'
+import { applyUserLocale } from './i18n'
 
 export const auth = reactive({ user: null, unread: 0 })
 export const isLoggedIn = computed(() => !!auth.user)
@@ -41,10 +42,12 @@ export async function initAuth() {
   if (!tokenStore.get()) return
   try {
     auth.user = await api.get('/me')
+    applyUserLocale(auth.user.locale)
     startPresence()
   } catch {
     tokenStore.clear()
     auth.user = null
+    applyUserLocale(null)
   }
 }
 
@@ -65,6 +68,7 @@ export async function login(loginValue, password) {
   const res = await api.post('/login', { login: loginValue, password })
   tokenStore.set(res.token)
   auth.user = res.user
+  applyUserLocale(auth.user.locale)
   startPresence()
   return res.user
 }

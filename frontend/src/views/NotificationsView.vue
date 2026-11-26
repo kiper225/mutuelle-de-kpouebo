@@ -34,18 +34,18 @@ onMounted(load)
 
 <template>
   <div>
-    <div class="page-banner"><div class="container"><h1>Notifications</h1></div></div>
+    <div class="page-banner"><div class="container"><h1>{{ $t('notif.title') }}</h1></div></div>
     <section class="section alt">
       <div class="container narrow">
         <div class="card">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
-            <h2 style="color: var(--green); margin: 0">Vos notifications</h2>
-            <button v-if="items.some((n) => !n.read)" type="button" class="btn outline-green small" @click="readAll">Tout marquer comme lu</button>
+            <h2 style="color: var(--green); margin: 0">{{ $t('notif.yours') }}</h2>
+            <button v-if="items.some((n) => !n.read)" type="button" class="btn outline-green small" @click="readAll">{{ $t('notif.markAllRead') }}</button>
           </div>
 
           <p v-if="error" class="alert err">{{ error }}</p>
-          <p v-else-if="loading" class="muted">Chargement…</p>
-          <p v-else-if="!items.length" class="muted">Aucune notification pour le moment.</p>
+          <p v-else-if="loading" class="muted">{{ $t('common.loading') }}</p>
+          <p v-else-if="!items.length" class="muted">{{ $t('notif.none') }}</p>
 
           <ul v-else class="notif-list" style="margin-top: 12px">
             <li v-for="n in items" :key="n.id">

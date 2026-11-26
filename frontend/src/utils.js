@@ -1,9 +1,18 @@
-export const CATEGORIES = {
+// une seule fois, tout en haut du fichier
+import { labels, intlLocale } from './i18n'
+
+export const GENDER = labels('gender', { M: 'Masculin', F: 'Féminin' })
+
+export function formatMoney(value) {
+  return `${new Intl.NumberFormat(intlLocale(), { maximumFractionDigits: 0 }).format(Number(value) || 0)} FCFA`
+}
+
+export const CATEGORIES = labels('category', {
   projet_en_cours: 'Projet en cours',
   realisation: 'Réalisation',
   communique: 'Communiqué',
   actualite: 'Actualité',
-}
+})
 export const categoryLabel = (c) => CATEGORIES[c] || c
 
 export const PROVIDERS = {
@@ -16,30 +25,26 @@ export const PROVIDERS = {
 }
 export const providerLabel = (p) => PROVIDERS[p] || p || '—'
 
-export const COTISATION_STATUS = { pending: 'En attente', paid: 'Payée', failed: 'Échec' }
-export const MEMBER_STATUS = { pending: 'En attente', active: 'Actif', suspended: 'Suspendu' }
-export const GENDER = { M: 'Masculin', F: 'Féminin' }
+export const COTISATION_STATUS = (labels('cotisation', { pending: 'En attente', paid: 'Payée', failed: 'Échec' }))
+export const MEMBER_STATUS = labels('member', { pending: 'En attente', active: 'Actif', suspended: 'Suspendu' })
 
 export function formatDate(value) {
   if (!value) return ''
-  return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  return new Date(value).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-export function formatMoney(amount) {
-  return new Intl.NumberFormat('fr-FR').format(amount ?? 0) + ' FCFA'
-}
 
 export function currentPeriod() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-export const MARITAL_STATUS = {
+export const MARITAL_STATUS = labels('marital', {
   celibataire: 'Célibataire',
   marie: 'Marié(e)',
   divorce: 'Divorcé(e)',
   veuf: 'Veuf / Veuve',
-}
+})
 
 export const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -53,6 +58,8 @@ export function formatDateShort(value) {
   return `${d}/${m}/${y}`
 }
 
+
+
 /** « il y a 6 h », « il y a 3 j », ou « Le 12 octobre à 15:17 » au-delà d'une semaine. */
 export function timeAgo(value) {
   if (!value) return ''
@@ -64,10 +71,10 @@ export function timeAgo(value) {
   if (seconds < 604800) return `il y a ${Math.floor(seconds / 86400)} j`
 
   const sameYear = d.getFullYear() === new Date().getFullYear()
-  const day = d.toLocaleDateString('fr-FR', sameYear ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' })
-  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  const day = d.toLocaleDateString(intlLocale(), sameYear ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' })
+  const time = d.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' })
   return `Le ${day} à ${time}`
 }
 
-export const PROJECT_STATUS = { en_cours: 'En cours', a_venir: 'À venir', realise: 'Réalisé' }
+export const PROJECT_STATUS = labels('project', { en_cours: 'En cours', a_venir: 'À venir', realise: 'Réalisé' })
 export const PROJECT_BADGE = { en_cours: 'warn', a_venir: 'gray', realise: '' }

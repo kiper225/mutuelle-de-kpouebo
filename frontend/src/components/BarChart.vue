@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { intlLocale } from '../i18n'
 
 const props = defineProps({
   labels: { type: Array, required: true }, // mois au format « 2026-10 »
@@ -35,8 +36,8 @@ function monthDate(key) {
   const [y, m] = String(key).split('-').map(Number)
   return new Date(y, m - 1, 1)
 }
-const monthShort = (key) => monthDate(key).toLocaleDateString('fr-FR', { month: 'short' })
-const monthLong = (key) => monthDate(key).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+const monthShort = (key) => monthDate(key).toLocaleDateString(intlLocale(), { month: 'short' })
+const monthLong = (key) => monthDate(key).toLocaleDateString(intlLocale(), { month: 'long', year: 'numeric' })
 
 function compact(v) {
   if (v >= 1_000_000) return `${+(v / 1_000_000).toFixed(1)} M`

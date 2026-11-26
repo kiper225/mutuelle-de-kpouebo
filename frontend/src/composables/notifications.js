@@ -1,15 +1,15 @@
 import { reactive } from 'vue'
 import { api } from '../api'
 import router from '../router'
+import { t, intlLocale } from '../i18n'
 
-export const KINDS = {
-  publication: { icon: '📰', label: 'Information' },
-  communique: { icon: '📢', label: 'Communiqué' },
-  activity: { icon: '🏗️', label: 'Activité' },
-  collecte: { icon: '🎁', label: 'Levée de fonds' },
-  cotisation_reminder: { icon: '⏰', label: 'Rappel de cotisation' },
+const KIND_ICONS = { publication: '📰', communique: '📢', activity: '🏗️', collecte: '🎁', cotisation_reminder: '⏰' }
+
+/** Icône et libellé (dans la langue courante) d'un type de notification. */
+export const kindOf = (n) => {
+  const known = !!KIND_ICONS[n.kind]
+  return { icon: known ? KIND_ICONS[n.kind] : '🔔', label: t(`notif.kinds.${known ? n.kind : 'other'}`) }
 }
-export const kindOf = (n) => KINDS[n.kind] || { icon: '🔔', label: 'Notification' }
 
 export const notifState = reactive({ items: [], unread: 0, messages: { unread: 0, latest: null } })
 export const toasts = reactive([]) // bulles dans la page : repli quand les alertes du navigateur ne sont pas disponibles
@@ -104,7 +104,12 @@ export async function enableAlerts() {
   if (permission === 'granted') {
     writeFlag('1')
     syncAlertState()
-    await showAlert({ title: 'Alertes activées', body: 'Vous serez prévenu des nouvelles informations, messages et rappels.', to: '/', tag: 'alerts-on' })
+    await showAlert({
+      title: t('alerts.enabledTitle'),
+      body: alertState.push ? t('alerts.enabledPush') : t('alerts.enabledOpen'),
+      to: '/',
+      tag: 'alerts-on',
+    })  
   }
   syncAlertState()
   return permission
@@ -154,10 +159,10 @@ export async function refreshNotifications() {
     known = new Set(res.items.map((n) => n.id))
 
     if (fresh.length > 3) {
-      await announce({ icon: '🔔', title: `${fresh.length} nouvelles notifications`, body: 'Cliquez pour les consulter.', to: '/notifications', tag: 'many' })
+      await announce({ icon: '🔔', title: t('notif.many', { count: fresh.length }), body: t('notif.manyBody'), to: '/notifications', tag: 'many' })
     } else {
       for (const n of fresh) {
-        await announce({ icon: kindOf(n).icon, title: n.title, body: n.body, to: n.url, tag: n.id })
+        await announce({ icon: '🔔', title: t('notif.many', { count: fresh.length }), body: t('notif.manyBody'), to: '/notifications', tag: 'many' })
       }
     }
 
@@ -223,15 +228,15 @@ export async function markAllRead() {
   }
 }
 
-/** « À l'instant », « Il y a 5 min », « Il y a 3 h », « Il y a 2 j », puis la date. */
+/** « À l'instant », « Il y a 5 min », « Il y a 3 h », « Il y a 2 j », puis la date : dans la langue courante. */
 export function timeAgo(iso) {
   const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
-  if (seconds < 60) return "À l'instant"
+  if (seconds < 60) return t('time.now')
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `Il y a ${minutes} min`
+  if (minutes < 60) return t('time.minutes', { n: minutes })
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `Il y a ${hours} h`
+  if (hours < 24) return t('time.hours', { n: hours })
   const days = Math.floor(hours / 24)
-  if (days < 7) return `Il y a ${days} j`
-  return new Date(iso).toLocaleDateString('fr-FR')
+  if (days < 7) return t('time.days', { n: days })
+  return new Date(iso).toLocaleDateString(intlLocale())
 }

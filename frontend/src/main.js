@@ -3,8 +3,9 @@ import App from './App.vue'
 import router from './router'
 import { initAuth } from './auth'
 import './styles.css'
+import { i18n } from './i18n'
 
 // On attend de connaître l'utilisateur connecté avant d'afficher l'application.
 initAuth().finally(() => {
-  createApp(App).use(router).mount('#app')
+  createApp(App).use(router).use(i18n).mount('#app')
 })
